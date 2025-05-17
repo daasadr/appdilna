@@ -1,6 +1,15 @@
+'use client'
+
 import Image from 'next/image'
+import { useState } from 'react'
+import AuthModal from '@/components/AuthButton'
+import { useSession, signIn, signOut } from 'next-auth/react'
+import { User } from 'lucide-react'
 
 export default function Home() {
+  const [showAuth, setShowAuth] = useState<null | 'login' | 'register'>(null)
+  const { data: session } = useSession()
+
   return (
     <div className="relative min-h-screen overflow-hidden">
       {/* Wood textura - na celé pozadí */}
@@ -70,8 +79,70 @@ export default function Home() {
         <div className="w-full h-full bg-blueprint bg-contain bg-no-repeat bg-center" />
       </div>
 
+      {/* PRAVÝ HORNÍ ROH: dvě menší dřevěná tlačítka */}
+      <div className="fixed top-8 right-8 z-50 flex gap-3">
+        {session ? (
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <User className="w-6 h-6" />
+              <span>{session.user?.name || session.user?.email}</span>
+            </div>
+            <button
+              onClick={() => signOut()}
+              className="px-4 py-2 rounded-full font-display text-base shadow-lg border hover:scale-105 transition-transform duration-200"
+              style={{
+                backgroundImage: "url('/images/wood.png')",
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                color: '#fff8e1',
+                textShadow: '0 1px 8px #181818, 0 1px 0 #b87333',
+                boxShadow: '0 2px 12px #0006, 0 1px 0 #fff4 inset',
+                borderWidth: '2px',
+                borderColor: '#6b4f27',
+              }}
+            >
+              Odhlásit se
+            </button>
+          </div>
+        ) : (
+          <div className="flex gap-4">
+            <button
+              onClick={() => setShowAuth('register')}
+              className="px-4 py-2 rounded-full font-display text-base shadow-lg border hover:scale-105 transition-transform duration-200"
+              style={{
+                backgroundImage: "url('/images/wood.png')",
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                color: '#fff8e1',
+                textShadow: '0 1px 8px #181818, 0 1px 0 #b87333',
+                boxShadow: '0 2px 12px #0006, 0 1px 0 #fff4 inset',
+                borderWidth: '2px',
+                borderColor: '#6b4f27',
+              }}
+            >
+              Registrovat
+            </button>
+            <button
+              onClick={() => setShowAuth('login')}
+              className="px-4 py-2 rounded-full font-display text-base shadow-lg border hover:scale-105 transition-transform duration-200"
+              style={{
+                backgroundImage: "url('/images/wood.png')",
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                color: '#fff8e1',
+                textShadow: '0 1px 8px #181818, 0 1px 0 #b87333',
+                boxShadow: '0 2px 12px #0006, 0 1px 0 #fff4 inset',
+                borderWidth: '2px',
+                borderColor: '#6b4f27',
+              }}
+            >
+              Přihlásit se
+            </button>
+          </div>
+        )}
+      </div>
+
       <div className="container mx-auto px-4 py-12 relative z-40">
-        {/* Hlavní obsah */}
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <h1 className="font-display text-6xl mb-4"
@@ -102,23 +173,24 @@ export default function Home() {
               S našimi nástroji a šablonami můžete vytvořit profesionální PWA aplikaci
               bez nutnosti psát jediný řádek kódu.
             </p>
-            <div className="flex justify-center">
-              <button
-                className="relative px-8 py-4 rounded-lg font-display text-xl shadow-lg border border-copper/40 hover:scale-105 transition-transform duration-200"
-                style={{
-                  backgroundImage: "url('/images/wood.png')",
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  color: '#fff8e1',
-                  textShadow: '0 1px 8px #181818, 0 1px 0 #b87333',
-                  boxShadow: '0 2px 12px #0006, 0 1px 0 #fff4 inset',
-                  borderWidth: '2px',
-                  borderColor: '#b87333',
-                  outline: 'none',
-                }}
-              >
-                Vstoupit do dílny
-              </button>
+            <div className="flex flex-col items-center justify-center">
+              <a href="/dashboard">
+                <button
+                  className="px-10 py-6 rounded-lg font-display text-2xl shadow-lg border hover:scale-105 transition-transform duration-200"
+                  style={{
+                    backgroundImage: "url('/images/wood.png')",
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    color: '#fff8e1',
+                    textShadow: '0 1px 8px #181818, 0 1px 0 #b87333',
+                    boxShadow: '0 2px 12px #0006, 0 1px 0 #fff4 inset',
+                    borderWidth: '2px',
+                    borderColor: '#6b4f27',
+                  }}
+                >
+                  Vstoupit do dílny
+                </button>
+              </a>
             </div>
           </div>
 
@@ -140,6 +212,16 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {/* Modální okno pro přihlášení/registraci */}
+      {showAuth && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-white/90 p-8 rounded-3xl max-w-md w-full mx-4 relative" style={{ backdropFilter: 'blur(8px)', boxShadow: '0 0 0 0 #fff0, 0 0 120px 48px #f5f1e6cc' }}>
+            <button onClick={() => setShowAuth(null)} className="absolute top-4 right-4 text-copper hover:text-copper/80">✕</button>
+            <AuthModal mode={showAuth} onClose={() => setShowAuth(null)} />
+          </div>
+        </div>
+      )}
     </div>
   )
 } 
