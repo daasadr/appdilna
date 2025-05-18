@@ -156,9 +156,83 @@ exports.Prisma.VerificationTokenScalarFieldEnum = {
   expires: 'expires'
 };
 
+exports.Prisma.Playing_with_neonScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  value: 'value'
+};
+
+exports.Prisma.TemplateScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  type: 'type',
+  category: 'category',
+  thumbnail: 'thumbnail',
+  config: 'config',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  userId: 'userId',
+  published: 'published',
+  deploymentUrl: 'deploymentUrl',
+  lastPublishedAt: 'lastPublishedAt'
+};
+
+exports.Prisma.PageScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  slug: 'slug',
+  templateId: 'templateId',
+  order: 'order',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.SectionScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  type: 'type',
+  content: 'content',
+  pageId: 'pageId',
+  order: 'order',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ContentVersionScalarFieldEnum = {
+  id: 'id',
+  sectionId: 'sectionId',
+  content: 'content',
+  createdAt: 'createdAt',
+  createdBy: 'createdBy'
+};
+
+exports.Prisma.CategoryScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  slug: 'slug',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PublishedVersionScalarFieldEnum = {
+  id: 'id',
+  templateId: 'templateId',
+  sections: 'sections',
+  version: 'version',
+  publishedAt: 'publishedAt',
+  publishedBy: 'publishedBy',
+  isLive: 'isLive'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
+};
+
+exports.Prisma.JsonNullValueInput = {
+  JsonNull: Prisma.JsonNull
 };
 
 exports.Prisma.QueryMode = {
@@ -171,12 +245,25 @@ exports.Prisma.NullsOrder = {
   last: 'last'
 };
 
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
+};
+
 
 exports.Prisma.ModelName = {
   Account: 'Account',
   Session: 'Session',
   User: 'User',
-  VerificationToken: 'VerificationToken'
+  VerificationToken: 'VerificationToken',
+  playing_with_neon: 'playing_with_neon',
+  Template: 'Template',
+  Page: 'Page',
+  Section: 'Section',
+  ContentVersion: 'ContentVersion',
+  Category: 'Category',
+  PublishedVersion: 'PublishedVersion'
 };
 
 /**

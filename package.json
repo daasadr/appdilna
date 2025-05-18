@@ -12,9 +12,18 @@
     "@auth/prisma-adapter": "^2.9.0",
     "@heroicons/react": "^2.1.1",
     "@prisma/client": "^6.7.0",
+    "@tiptap/extension-color": "^2.12.0",
+    "@tiptap/extension-image": "^2.12.0",
+    "@tiptap/extension-link": "^2.12.0",
+    "@tiptap/extension-text-align": "^2.12.0",
+    "@tiptap/extension-underline": "^2.12.0",
+    "@tiptap/pm": "^2.12.0",
+    "@tiptap/react": "^2.12.0",
+    "@tiptap/starter-kit": "^2.12.0",
     "@types/node": "^20.11.17",
     "@types/react": "^18.2.55",
     "@types/react-dom": "^18.2.19",
+    "@uploadthing/react": "^7.3.1",
     "autoprefixer": "^10.4.17",
     "lucide-react": "^0.510.0",
     "next": "14.1.0",
@@ -25,8 +34,10 @@
     "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^18.2.0",
     "resend": "^4.5.1",
+    "sharp": "^0.34.1",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "uploadthing": "^7.7.2"
   },
   "devDependencies": {
     "prisma": "^6.7.0"
