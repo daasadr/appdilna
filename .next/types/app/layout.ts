@@ -1,4 +1,4 @@
-// File: C:\Users\Dasa\very-app\src\app\layout.tsx
+// File: /home/dasa/appdilna/src/app/layout.tsx
 import * as entry from '../../../src/app/layout.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

@@ -9,8 +9,52 @@ export interface Template {
   category: string;
   components: TemplateComponent[];
   config: TemplateConfig;
+  pages: PageDefinition[];
+  navigation: NavigationConfig;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface PageDefinition {
+  type: PageType;
+  name: string;
+  isRequired: boolean;
+  sections: SectionDefinition[];
+  meta: {
+    title: string;
+    description?: string;
+    keywords?: string[];
+  };
+}
+
+export type PageType = 'home' | 'about' | 'contact' | 'menu' | 'services' | 'gallery' | 'blog' | 'custom';
+
+export interface SectionDefinition {
+  type: SectionType;
+  name: string;
+  isRequired: boolean;
+  defaultContent?: ContentBlock;
+  allowedContentTypes: ('text' | 'image' | 'video' | 'form')[];
+  style?: Record<string, string>;
+}
+
+export type SectionType = 'header' | 'hero' | 'content' | 'features' | 'gallery' | 'contact' | 'footer' | 'custom';
+
+export interface NavigationConfig {
+  type: NavigationType;
+  position: NavigationPosition;
+  items: NavigationItem[];
+  style?: Record<string, string>;
+}
+
+export type NavigationType = 'simple' | 'dropdown' | 'megamenu';
+export type NavigationPosition = 'top' | 'bottom' | 'left' | 'right';
+
+export interface NavigationItem {
+  label: string;
+  pageType: PageType;
+  icon?: string;
+  children?: NavigationItem[];
 }
 
 export interface TemplateComponent {

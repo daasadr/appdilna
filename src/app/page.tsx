@@ -5,10 +5,20 @@ import { useState } from 'react'
 import AuthModal from '@/components/AuthButton'
 import { useSession, signIn, signOut } from 'next-auth/react'
 import { User } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 export default function Home() {
   const [showAuth, setShowAuth] = useState<null | 'login' | 'register'>(null)
   const { data: session } = useSession()
+  const router = useRouter()
+
+  const handleEnterWorkshop = () => {
+    if (session) {
+      router.push('/dashboard')
+    } else {
+      setShowAuth('login')
+    }
+  }
 
   return (
     <div className="relative min-h-screen overflow-hidden">
@@ -174,23 +184,22 @@ export default function Home() {
               bez nutnosti psát jediný řádek kódu.
             </p>
             <div className="flex flex-col items-center justify-center">
-              <a href="/dashboard">
-                <button
-                  className="px-10 py-6 rounded-lg font-display text-2xl shadow-lg border hover:scale-105 transition-transform duration-200"
-                  style={{
-                    backgroundImage: "url('/images/wood.png')",
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    color: '#fff8e1',
-                    textShadow: '0 1px 8px #181818, 0 1px 0 #b87333',
-                    boxShadow: '0 2px 12px #0006, 0 1px 0 #fff4 inset',
-                    borderWidth: '2px',
-                    borderColor: '#6b4f27',
-                  }}
-                >
-                  Vstoupit do dílny
-                </button>
-              </a>
+              <button
+                onClick={handleEnterWorkshop}
+                className="px-10 py-6 rounded-lg font-display text-2xl shadow-lg border hover:scale-105 transition-transform duration-200"
+                style={{
+                  backgroundImage: "url('/images/wood.png')",
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  color: '#fff8e1',
+                  textShadow: '0 1px 8px #181818, 0 1px 0 #b87333',
+                  boxShadow: '0 2px 12px #0006, 0 1px 0 #fff4 inset',
+                  borderWidth: '2px',
+                  borderColor: '#6b4f27',
+                }}
+              >
+                Vstoupit do dílny
+              </button>
             </div>
           </div>
 

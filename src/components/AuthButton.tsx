@@ -2,25 +2,48 @@
 
 import { signIn, signOut, useSession } from 'next-auth/react'
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function AuthModal({ mode = 'login', onClose }: { mode?: 'login' | 'register', onClose?: () => void }) {
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
   const [email, setEmail] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
+  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setMessage(null)
-    // Magic link
-    const res = await signIn('email', { email, callbackUrl: '/' })
-    setIsLoading(false)
-    if (res?.error) {
+    try {
+      const res = await signIn('email', { 
+        email, 
+        callbackUrl: '/dashboard',
+        redirect: false
+      })
+      
+      if (res?.error) {
+        setMessage('Nastala chyba při odesílání odkazu. Zkuste to znovu.')
+      } else {
+        setMessage('Odeslali jsme vám přihlašovací odkaz na email.')
+      }
+    } catch (error) {
       setMessage('Nastala chyba při odesílání odkazu. Zkuste to znovu.')
-    } else {
-      setMessage('Odeslali jsme vám přihlašovací odkaz na email.')
+    } finally {
+      setIsLoading(false)
     }
+  }
+
+  const handleGoogleSignIn = () => {
+    signIn('google')
+  }
+
+  if (status === 'loading') {
+    return (
+      <div className="flex items-center justify-center">
+        <div className="text-copper">Načítání...</div>
+      </div>
+    )
   }
 
   if (session) {
@@ -92,22 +115,14 @@ export default function AuthModal({ mode = 'login', onClose }: { mode?: 'login' 
             <span className="px-2 bg-white/90 text-copper">nebo pokračujte s</span>
           </div>
         </div>
-        <div className="mt-6 grid grid-cols-2 gap-3">
+        <div className="mt-6 grid grid-cols-1 gap-3">
           <button
             type="button"
-            onClick={() => signIn('google')}
+            onClick={handleGoogleSignIn}
             className="w-full py-2 px-4 rounded-lg border border-copper/40 hover:bg-gray-50 flex items-center justify-center gap-2"
           >
             <img src="/images/google.svg" alt="Google" className="w-5 h-5" />
             Google
-          </button>
-          <button
-            type="button"
-            onClick={() => signIn('github')}
-            className="w-full py-2 px-4 rounded-lg border border-copper/40 hover:bg-gray-50 flex items-center justify-center gap-2"
-          >
-            <img src="/images/github.svg" alt="GitHub" className="w-5 h-5" />
-            GitHub
           </button>
         </div>
       </div>
