@@ -117,7 +117,7 @@ export default function Home() {
         ) : (
           <div className="flex gap-4">
             <button
-              onClick={() => setShowAuth('register')}
+              onClick={() => router.push('/register')}
               className="px-4 py-2 rounded-full font-display text-base shadow-lg border hover:scale-105 transition-transform duration-200"
               style={{
                 backgroundImage: "url('/images/wood.png')",

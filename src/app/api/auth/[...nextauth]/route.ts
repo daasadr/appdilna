@@ -1,60 +1,60 @@
-import NextAuth from "next-auth"
+import NextAuth, { NextAuthOptions, User, Account, Session } from "next-auth"
+import type { JWT } from "next-auth/jwt"
 import GoogleProvider from "next-auth/providers/google"
-import EmailProvider from "next-auth/providers/email"
-import { Resend } from 'resend'
+import CredentialsProvider from "next-auth/providers/credentials"
 import { directus } from '@/lib/directus'
 import { createItems, readItems } from '@directus/sdk'
+import bcrypt from 'bcryptjs'
 
 if (!process.env.NEXTAUTH_URL) {
   throw new Error('Missing NEXTAUTH_URL environment variable')
-}
-
-if (!process.env.RESEND_API_KEY) {
-  throw new Error('Missing RESEND_API_KEY environment variable')
 }
 
 if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
   throw new Error('Missing Google OAuth credentials')
 }
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-
-export const authOptions = {
+export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
-    EmailProvider({
-      async sendVerificationRequest({ identifier, url }) {
-        try {
-          await resend.emails.send({
-            from: 'AppDilna <no-reply@appdilna.cz>',
-            to: identifier,
-            subject: 'Přihlášení do AppDílna',
-            html: `
-              <div style="max-width: 600px; margin: 0 auto; padding: 20px; font-family: sans-serif;">
-                <h1 style="color: #b87333; margin-bottom: 20px;">Přihlášení do AppDílna</h1>
-                <p style="margin-bottom: 20px;">Klikněte na tlačítko níže pro přihlášení do vaší AppDílna:</p>
-                <a href="${url}" 
-                   style="display: inline-block; padding: 12px 24px; background-color: #b87333; color: white; text-decoration: none; border-radius: 5px;">
-                  Přihlásit se
-                </a>
-                <p style="margin-top: 20px; font-size: 14px; color: #666;">
-                  Pokud jste o přihlášení nežádali, tento email můžete ignorovat.
-                </p>
-              </div>
-            `
-          })
-        } catch (error) {
-          console.error('Failed to send verification email:', error)
-          throw new Error('Failed to send verification email')
-        }
-      }
+    CredentialsProvider({
+      name: 'Přihlášení e-mailem',
+      credentials: {
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Heslo', type: 'password' },
+      },
+      async authorize(credentials) {
+        const email = credentials?.email;
+        const password = credentials?.password;
+        if (!email || !password) return null;
+        // Najdi uživatele v app_users
+        const directusUrl = process.env.DIRECTUS_URL!;
+        const directusToken = process.env.DIRECTUS_TOKEN!;
+        const res = await fetch(
+          `${directusUrl}/items/app_users?filter[email][_eq]=${encodeURIComponent(email)}`,
+          {
+            headers: { Authorization: `Bearer ${directusToken}` },
+          }
+        );
+        const data = await res.json();
+        const user = data.data && data.data[0];
+        if (!user || !user.password) return null;
+        const isValid = await bcrypt.compare(password, user.password);
+        if (!isValid) return null;
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          provider: 'email',
+        };
+      },
     }),
   ],
   session: {
-    strategy: "jwt",
+    strategy: "jwt" as const,
   },
   pages: {
     signIn: '/',
@@ -62,39 +62,62 @@ export const authOptions = {
     verifyRequest: '/auth/verify',
   },
   callbacks: {
-    async signIn({ user, account }) {
+    async signIn({ user, account }: { user: User; account: Account | null }) {
       if (!user.email) return false;
-
-      try {
-        // Kontrola, zda uživatel existuje v Directusu
-        const existingUsers = await directus.request(readItems('directus_users', {
-          filter: { email: { _eq: user.email } },
-        }));
-
-        if (existingUsers.length === 0) {
-          // Vytvoření nového uživatele v Directusu
-          await directus.request(createItems('directus_users', [{
-            email: user.email,
-            first_name: user.name?.split(' ')[0] || '',
-            last_name: user.name?.split(' ').slice(1).join(' ') || '',
-            role: process.env.DIRECTUS_DEFAULT_ROLE_ID,
-            status: 'active',
-          }]));
+      // Pokud je to Google login, vytvoř uživatele v Directusu pokud neexistuje
+      if (account?.provider === 'google') {
+        try {
+          const directusUrl = process.env.DIRECTUS_URL!;
+          const directusToken = process.env.DIRECTUS_TOKEN!;
+          // Zkus najít uživatele v app_users podle emailu
+          const res = await fetch(
+            `${directusUrl}/items/app_users?filter[email][_eq]=${encodeURIComponent(user.email!)}`,
+            {
+              headers: { Authorization: `Bearer ${directusToken}` },
+            }
+          );
+          const data = await res.json();
+          if (!data.data || data.data.length === 0) {
+            // Pokud neexistuje, vytvoř
+            await fetch(`${directusUrl}/items/app_users`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${directusToken}`,
+              },
+              body: JSON.stringify({
+                email: user.email,
+                name: user.name,
+                avatar: user.image,
+              }),
+            });
+          }
+        } catch (error) {
+          console.error('Error during Google sign in:', error);
+          return false;
         }
-
-        return true;
-      } catch (error) {
-        console.error('Error during sign in:', error);
-        return false;
       }
+      return true;
     },
-    async redirect({ url, baseUrl }) {
+    async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
       return url.startsWith(baseUrl) ? url : baseUrl + '/dashboard'
     },
-    async session({ session, token }) {
+    async session({ session, token }: { session: Session; token: JWT }) {
+      // Přidáme access_token a refresh_token do session pokud existují
+      if (token?.access_token) (session as any).accessToken = token.access_token;
+      if (token?.refresh_token) (session as any).refreshToken = token.refresh_token;
+      if (token?.id && session.user && typeof session.user === 'object') {
+        (session.user as any).id = token.id as string;
+      }
       return session;
     },
-    async jwt({ token, account }) {
+    async jwt({ token, user, account }: { token: JWT; user?: User; account?: Account | null }) {
+      // Uložíme access_token a refresh_token z Directusu do JWT
+      if (user && account?.provider === 'credentials') {
+        token.access_token = (user as any).access_token;
+        token.refresh_token = (user as any).refresh_token;
+        token.id = (user as any).id;
+      }
       return token;
     },
   },

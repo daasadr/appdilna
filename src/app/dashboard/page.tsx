@@ -28,6 +28,46 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-parchment/10">
+      {/* Stylový dřevěný home button v pravém horním rohu */}
+      <a
+        href="/"
+        className="fixed top-8 right-8 z-50"
+        style={{ textDecoration: 'none' }}
+      >
+        <button
+          className="w-16 h-16 flex items-center justify-center rounded-full shadow-lg border hover:scale-110 transition-transform duration-200"
+          style={{
+            backgroundImage: "url('/images/wood.png')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            color: '#fff8e1',
+            textShadow: '0 1px 8px #181818, 0 1px 0 #b87333',
+            boxShadow: '0 2px 12px #0006, 0 1px 0 #fff4 inset',
+            borderWidth: '3px',
+            borderColor: '#6b4f27',
+            outline: 'none',
+            fontSize: '1.5rem',
+            fontFamily: 'inherit',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 0,
+          }}
+          aria-label="Domů"
+        >
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="woodHouse" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+                <stop stopColor="#b87333" />
+                <stop offset="1" stopColor="#6b4f27" />
+              </linearGradient>
+            </defs>
+            <path d="M6 16L16 7L26 16V26C26 26.5523 25.5523 27 25 27H7C6.44772 27 6 26.5523 6 26V16Z" fill="url(#woodHouse)" stroke="#6b4f27" strokeWidth="2" />
+            <rect x="12" y="20" width="8" height="7" rx="1.5" fill="#fff8e1" stroke="#b87333" strokeWidth="1.5" />
+          </svg>
+        </button>
+      </a>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <h1 className="text-4xl font-display text-copper mb-8">
           Vítejte, {session.user?.name || session.user?.email}

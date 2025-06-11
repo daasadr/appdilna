@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 export default function AuthModal({ mode = 'login', onClose }: { mode?: 'login' | 'register', onClose?: () => void }) {
   const { data: session, status } = useSession()
   const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
   const router = useRouter()
@@ -16,19 +17,20 @@ export default function AuthModal({ mode = 'login', onClose }: { mode?: 'login' 
     setIsLoading(true)
     setMessage(null)
     try {
-      const res = await signIn('email', { 
-        email, 
+      const res = await signIn('credentials', {
+        email,
+        password,
         callbackUrl: '/dashboard',
         redirect: false
       })
-      
       if (res?.error) {
-        setMessage('Nastala chyba při odesílání odkazu. Zkuste to znovu.')
+        setMessage('Nesprávný email nebo heslo.')
       } else {
-        setMessage('Odeslali jsme vám přihlašovací odkaz na email.')
+        setMessage(null)
+        router.push('/dashboard')
       }
     } catch (error) {
-      setMessage('Nastala chyba při odesílání odkazu. Zkuste to znovu.')
+      setMessage('Nastala chyba při přihlášení. Zkuste to znovu.')
     } finally {
       setIsLoading(false)
     }
@@ -87,6 +89,17 @@ export default function AuthModal({ mode = 'login', onClose }: { mode?: 'login' 
             required
           />
         </div>
+        <div>
+          <label htmlFor="password" className="block text-copper mb-2">Heslo</label>
+          <input
+            type="password"
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full px-4 py-2 rounded-lg border border-copper/40 focus:outline-none focus:border-copper"
+            required
+          />
+        </div>
         <button
           type="submit"
           disabled={isLoading}
@@ -102,7 +115,7 @@ export default function AuthModal({ mode = 'login', onClose }: { mode?: 'login' 
             borderColor: '#6b4f27',
           }}
         >
-          {isLoading ? 'Odesílám...' : (mode === 'register' ? 'Zaslat registrační odkaz' : 'Zaslat přihlašovací odkaz')}
+          {isLoading ? 'Přihlašuji...' : 'Přihlásit se'}
         </button>
       </form>
       {message && <div className="mt-4 text-center text-copper">{message}</div>}

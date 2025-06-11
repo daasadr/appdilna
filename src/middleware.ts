@@ -3,11 +3,7 @@ import { NextResponse } from "next/server"
 
 export default withAuth(
   function middleware(req) {
-    if (req.nextUrl.pathname === '/') {
-      if (req.nextauth.token) {
-        return NextResponse.redirect(new URL('/dashboard', req.url))
-      }
-    }
+    // Z homepage uživatele NEREDIRECTUJEME na dashboard
     return NextResponse.next()
   },
   {
@@ -24,5 +20,5 @@ export default withAuth(
 
 // Nastavení, které cesty mají být chráněné
 export const config = {
-  matcher: ['/', '/dashboard/:path*']
+  matcher: ['/dashboard/:path*']
 } 
