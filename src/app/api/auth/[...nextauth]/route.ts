@@ -34,7 +34,7 @@ export const authOptions: NextAuthOptions = {
         const directusUrl = process.env.DIRECTUS_URL!;
         const directusToken = process.env.DIRECTUS_TOKEN!;
         const res = await fetch(
-          `${directusUrl}/items/app_users?filter[email][_eq]=${encodeURIComponent(email)}`,
+          `${directusUrl}/items/app_users?filter[email][_eq]=${encodeURIComponent(email)}&fields=id,email,name,password,provider`,
           {
             headers: { Authorization: `Bearer ${directusToken}` },
           }

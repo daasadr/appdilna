@@ -1,28 +1,21 @@
-import { PrismaClient } from '@prisma/client';
 import { ContentDisplay } from '@/components/content/ContentDisplay';
 import { ContentBlock } from '@/types/template';
 import { notFound } from 'next/navigation';
-
-const prisma = new PrismaClient();
+import { directus } from '@/lib/directus';
+import { readItems } from '@directus/sdk';
 
 export const revalidate = 3600; // Revalidace každou hodinu
 
 async function getPublishedVersion(id: string) {
-  const publishedVersion = await prisma.publishedVersion.findFirst({
-    where: {
-      templateId: id,
-      isLive: true
+  const versions = await directus.request(readItems('published_versions', {
+    filter: {
+      template_id: { _eq: id },
+      isLive: { _eq: true }
     },
-    orderBy: {
-      version: 'desc'
-    }
-  });
-
-  if (!publishedVersion) {
-    return null;
-  }
-
-  return publishedVersion;
+    sort: ['-version'],
+    limit: 1
+  }));
+  return versions[0] || null;
 }
 
 export default async function AppPage({ params }: { params: { id: string } }) {

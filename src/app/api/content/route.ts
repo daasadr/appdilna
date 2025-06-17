@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
 import { ContentBlock } from '@/types/template';
-
-const prisma = new PrismaClient();
+import { directus } from '@/lib/directus';
+import { readItems, updateItems, createItems } from '@directus/sdk';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -13,9 +12,10 @@ export async function GET(request: Request) {
   }
 
   try {
-    const section = await prisma.section.findUnique({
-      where: { id: sectionId },
-    });
+    const sections = await directus.request(readItems('sections', {
+      filter: { id: { _eq: sectionId } }
+    }));
+    const section = sections[0];
 
     if (!section) {
       return NextResponse.json({ error: 'Section not found' }, { status: 404 });
@@ -37,21 +37,19 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Section ID and content are required' }, { status: 400 });
     }
 
-    // Create new content version
-    await prisma.contentVersion.create({
-      data: {
-        sectionId,
-        content: content as ContentBlock,
-      },
-    });
+    // Create new content version (pokud máš kolekci content_versions, jinak vynech)
+    // await directus.request(createItems('content_versions', [{
+    //   section_id: sectionId,
+    //   content: content as ContentBlock,
+    // }]));
 
     // Update section with new content
-    const updatedSection = await prisma.section.update({
-      where: { id: sectionId },
-      data: { content: content as ContentBlock },
-    });
+    const updatedSections = await directus.request(updateItems('sections', {
+      filter: { id: { _eq: sectionId } },
+      data: { content: content as ContentBlock }
+    }));
 
-    return NextResponse.json(updatedSection);
+    return NextResponse.json(updatedSections[0]);
   } catch (error) {
     console.error('Error updating content:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
@@ -67,12 +65,12 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: 'Section ID and content are required' }, { status: 400 });
     }
 
-    const updatedSection = await prisma.section.update({
-      where: { id: sectionId },
-      data: { content: content as ContentBlock },
-    });
+    const updatedSections = await directus.request(updateItems('sections', {
+      filter: { id: { _eq: sectionId } },
+      data: { content: content as ContentBlock }
+    }));
 
-    return NextResponse.json(updatedSection);
+    return NextResponse.json(updatedSections[0]);
   } catch (error) {
     console.error('Error updating content:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
