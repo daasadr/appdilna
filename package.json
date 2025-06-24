@@ -11,6 +11,7 @@
   "dependencies": {
     "@directus/sdk": "^19.1.0",
     "@heroicons/react": "^2.1.1",
+    "@hookform/resolvers": "^5.1.1",
     "@sentry/nextjs": "^9.19.0",
     "@tanstack/react-query": "^5.79.0",
     "@tiptap/extension-color": "^2.12.0",
@@ -27,22 +28,23 @@
     "@uploadthing/react": "^7.3.1",
     "autoprefixer": "^10.4.17",
     "bcryptjs": "^3.0.2",
+    "dotenv": "^16.5.0",
     "lucide-react": "^0.510.0",
     "next": "14.1.0",
     "next-auth": "^4.24.11",
+    "node-fetch": "^3.3.2",
     "postcss": "^8.4.35",
     "react": "^18.2.0",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^18.2.0",
+    "react-hook-form": "^7.58.1",
     "resend": "^4.5.1",
     "sharp": "^0.34.1",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.3.3",
     "uploadthing": "^7.7.2",
-    "zod": "^3.24.4",
+    "zod": "^3.25.67",
     "zustand": "^5.0.4"
-  },
-  "devDependencies": {
   }
 }

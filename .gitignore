@@ -2,6 +2,7 @@
 /node_modules
 /.pnp
 .pnp.js
+.pnp.cjs
 
 # testing
 /coverage
@@ -43,4 +44,7 @@ node_modules/
 .env.development
 .env.test
 .env.production
+
+# generated apps
+/generated-apps
 

@@ -14,6 +14,50 @@ if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
   throw new Error('Missing Google OAuth credentials')
 }
 
+// Typ pro data vrácená z Directus API po přihlášení
+interface DirectusLoginData {
+  access_token: string;
+  expires: number; // Doba platnosti v ms
+  refresh_token: string;
+}
+
+// Typ pro uživatele vráceného z authorize, rozšířený o data z Directusu
+interface AppUser extends User {
+  id: string;
+  accessToken: string;
+  accessTokenExpires: number;
+  refreshToken: string;
+}
+
+/**
+ * Použije refresh token k získání nového access tokenu z Directusu.
+ */
+async function refreshAccessToken(token: JWT): Promise<JWT> {
+  try {
+    const url = `${process.env.DIRECTUS_URL}/auth/refresh`;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        refresh_token: token.refreshToken,
+        mode: 'json'
+      }),
+    });
+    const refreshedTokens = await response.json();
+    if (!response.ok) throw refreshedTokens;
+    const newTokens = refreshedTokens.data;
+    return {
+      ...token,
+      accessToken: newTokens.access_token,
+      accessTokenExpires: Date.now() + newTokens.expires,
+      refreshToken: newTokens.refresh_token ?? token.refreshToken,
+    };
+  } catch (error) {
+    console.error('Chyba při obnovování tokenu', error);
+    return { ...token, error: 'RefreshAccessTokenError' };
+  }
+}
+
 export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
@@ -27,29 +71,38 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Heslo', type: 'password' },
       },
       async authorize(credentials) {
-        const email = credentials?.email;
-        const password = credentials?.password;
-        if (!email || !password) return null;
-        // Najdi uživatele v app_users
-        const directusUrl = process.env.DIRECTUS_URL!;
-        const directusToken = process.env.DIRECTUS_TOKEN!;
-        const res = await fetch(
-          `${directusUrl}/items/app_users?filter[email][_eq]=${encodeURIComponent(email)}&fields=id,email,name,password,provider`,
-          {
-            headers: { Authorization: `Bearer ${directusToken}` },
+        if (!credentials?.email || !credentials?.password) return null;
+        try {
+          const res = await fetch(`${process.env.NEXTAUTH_URL}/api/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: credentials.email,
+              password: credentials.password,
+            }),
+          });
+          if (!res.ok) {
+            console.error("Přihlášení selhalo v /api/login");
+            return null;
           }
-        );
-        const data = await res.json();
-        const user = data.data && data.data[0];
-        if (!user || !user.password) return null;
-        const isValid = await bcrypt.compare(password, user.password);
-        if (!isValid) return null;
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          provider: 'email',
-        };
+          const loginData = await res.json();
+          const { data, user } = loginData;
+          if (!data || !user) {
+            console.error("Odpověď z /api/login neobsahuje potřebná data");
+            return null;
+          }
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.first_name || user.email,
+            accessToken: data.access_token,
+            accessTokenExpires: Date.now() + data.expires,
+            refreshToken: data.refresh_token,
+          };
+        } catch (error) {
+          console.error("Chyba při volání /api/login v authorize:", error);
+          return null;
+        }
       },
     }),
   ],
@@ -58,71 +111,57 @@ export const authOptions: NextAuthOptions = {
   },
   pages: {
     signIn: '/',
-    error: '/auth/error',
-    verifyRequest: '/auth/verify',
   },
   callbacks: {
-    async signIn({ user, account }: { user: User; account: Account | null }) {
-      if (!user.email) return false;
-      // Pokud je to Google login, vytvoř uživatele v Directusu pokud neexistuje
-      if (account?.provider === 'google') {
-        try {
-          const directusUrl = process.env.DIRECTUS_URL!;
-          const directusToken = process.env.DIRECTUS_TOKEN!;
-          // Zkus najít uživatele v app_users podle emailu
-          const res = await fetch(
-            `${directusUrl}/items/app_users?filter[email][_eq]=${encodeURIComponent(user.email!)}`,
-            {
-              headers: { Authorization: `Bearer ${directusToken}` },
-            }
-          );
-          const data = await res.json();
-          if (!data.data || data.data.length === 0) {
-            // Pokud neexistuje, vytvoř
-            await fetch(`${directusUrl}/items/app_users`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${directusToken}`,
-              },
-              body: JSON.stringify({
-                email: user.email,
-                name: user.name,
-                avatar: user.image,
-              }),
+    async jwt({ token, user, account }) {
+      if (user && account) {
+        if (account.provider === 'credentials') {
+           token.accessToken = (user as AppUser).accessToken;
+           token.accessTokenExpires = (user as AppUser).accessTokenExpires;
+           token.refreshToken = (user as AppUser).refreshToken;
+           token.id = user.id;
+        }
+        else if (account.provider === 'google') {
+          try {
+            const res = await fetch(`${process.env.NEXTAUTH_URL}/api/login`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email: user.email, isGoogle: true }),
             });
+            const loginData = await res.json();
+            const { data, user: directusUser } = loginData;
+            if (data && directusUser) {
+              token.accessToken = data.access_token;
+              token.accessTokenExpires = Date.now() + data.expires;
+              token.refreshToken = data.refresh_token;
+              token.id = directusUser.id;
+            }
+          } catch(e) {
+            console.error("Chyba při Google přihlášení do Directusu", e);
+            token.error = "GoogleLoginError";
           }
-        } catch (error) {
-          console.error('Error during Google sign in:', error);
-          return false;
         }
       }
-      return true;
+      
+      if (Date.now() < (token.accessTokenExpires as number)) {
+        return token;
+      }
+      
+      console.log("Access token expiroval, pokouším se o refresh...");
+      return refreshAccessToken(token);
     },
-    async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
-      return url.startsWith(baseUrl) ? url : baseUrl + '/dashboard'
-    },
+
     async session({ session, token }: { session: Session; token: JWT }) {
-      // Přidáme access_token a refresh_token do session pokud existují
-      if (token?.access_token) (session as any).accessToken = token.access_token;
-      if (token?.refresh_token) (session as any).refreshToken = token.refresh_token;
-      if (token?.id && session.user && typeof session.user === 'object') {
-        (session.user as any).id = token.id as string;
+      if (token) {
+        (session.user as any).id = token.id;
+        session.accessToken = token.accessToken;
+        session.error = token.error;
       }
       return session;
     },
-    async jwt({ token, user, account }: { token: JWT; user?: User; account?: Account | null }) {
-      // Uložíme access_token a refresh_token z Directusu do JWT
-      if (user && account?.provider === 'credentials') {
-        token.access_token = (user as any).access_token;
-        token.refresh_token = (user as any).refresh_token;
-        token.id = (user as any).id;
-      }
-      return token;
-    },
   },
-}
+};
 
-const handler = NextAuth(authOptions)
+const handler = NextAuth(authOptions);
 
-export { handler as GET, handler as POST } 
+export { handler as GET, handler as POST }; 
