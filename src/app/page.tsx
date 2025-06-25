@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import { useState } from 'react'
-import AuthModal from '@/components/AuthButton'
+import AuthModal from '@/components/AuthModal'
 import { useSession, signIn, signOut } from 'next-auth/react'
 import { User } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -117,7 +117,7 @@ export default function Home() {
         ) : (
           <div className="flex gap-4">
             <button
-              onClick={() => router.push('/register')}
+              onClick={() => setShowAuth('register')}
               className="px-4 py-2 rounded-full font-display text-base shadow-lg border hover:scale-105 transition-transform duration-200"
               style={{
                 backgroundImage: "url('/images/wood.png')",

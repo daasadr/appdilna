@@ -3,7 +3,7 @@ import type { JWT } from "next-auth/jwt"
 import GoogleProvider from "next-auth/providers/google"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { directus } from '@/lib/directus'
-import { createItems, readItems } from '@directus/sdk'
+import { readMe, readUsers } from '@directus/sdk'
 import bcrypt from 'bcryptjs'
 
 if (!process.env.NEXTAUTH_URL) {
@@ -12,6 +12,14 @@ if (!process.env.NEXTAUTH_URL) {
 
 if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
   throw new Error('Missing Google OAuth credentials')
+}
+
+// Rozšíření Session typu
+declare module "next-auth" {
+  interface Session {
+    accessToken?: string;
+    error?: string;
+  }
 }
 
 // Typ pro data vrácená z Directus API po přihlášení
@@ -72,37 +80,36 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
-        try {
-          const res = await fetch(`${process.env.NEXTAUTH_URL}/api/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              email: credentials.email,
-              password: credentials.password,
-            }),
-          });
-          if (!res.ok) {
-            console.error("Přihlášení selhalo v /api/login");
-            return null;
-          }
-          const loginData = await res.json();
-          const { data, user } = loginData;
-          if (!data || !user) {
-            console.error("Odpověď z /api/login neobsahuje potřebná data");
-            return null;
-          }
-          return {
-            id: user.id,
-            email: user.email,
-            name: user.first_name || user.email,
-            accessToken: data.access_token,
-            accessTokenExpires: Date.now() + data.expires,
-            refreshToken: data.refresh_token,
-          };
-        } catch (error) {
-          console.error("Chyba při volání /api/login v authorize:", error);
+
+        // Ověření přes Directus API
+        const res = await fetch(`${process.env.DIRECTUS_URL}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: credentials.email,
+            password: credentials.password,
+          }),
+        });
+
+        if (!res.ok) {
+          console.log("Directus login failed:", await res.text());
           return null;
         }
+
+        const { data } = await res.json();
+
+        // Získání uživatele
+        const userRes = await fetch(`${process.env.DIRECTUS_URL}/users/me`, {
+          headers: { Authorization: `Bearer ${data.access_token}` },
+        });
+        const userData = await userRes.json();
+
+        return {
+          id: userData.data.id,
+          email: userData.data.email,
+          name: userData.data.first_name,
+          accessToken: data.access_token,
+        };
       },
     }),
   ],
@@ -154,8 +161,8 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }: { session: Session; token: JWT }) {
       if (token) {
         (session.user as any).id = token.id;
-        session.accessToken = token.accessToken;
-        session.error = token.error;
+        session.accessToken = token.accessToken as string;
+        session.error = token.error as string;
       }
       return session;
     },

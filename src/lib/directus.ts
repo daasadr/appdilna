@@ -1,4 +1,4 @@
-import { createDirectus, rest, staticToken, readItems, createItems } from '@directus/sdk';
+import { createDirectus, rest, staticToken, readItems, createItems, readUsers, createUsers } from '@directus/sdk';
 
 // Typy pro kolekce
 export interface Schema {
@@ -33,6 +33,6 @@ export interface Schema {
   };
 }
 
-export const directus = createDirectus<Schema>('https://dir.appdilna.cz')
+export const directus = createDirectus<Schema>(process.env.DIRECTUS_URL!)
   .with(staticToken(process.env.DIRECTUS_ADMIN_TOKEN!))
   .with(rest()); 
