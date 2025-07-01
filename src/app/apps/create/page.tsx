@@ -64,6 +64,12 @@ export default async function CreateAppPage() {
   if (!session) {
     redirect('/')
   }
+  
+  // Kontrola chyby refresh tokenu nebo chybějícího access tokenu
+  if (session.error === 'RefreshAccessTokenError' || !session.accessToken) {
+    console.log('Refresh token error or missing access token detected, redirecting to login');
+    redirect('/?error=RefreshAccessTokenError')
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">

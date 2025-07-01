@@ -1,0 +1,72 @@
+'use client';
+
+interface ImageComponentProps {
+  props: Record<string, any>;
+  style: Record<string, any>;
+  isPreviewMode: boolean;
+}
+
+export function ImageComponent({ props, style, isPreviewMode }: ImageComponentProps) {
+  const {
+    src = '/placeholder.jpg',
+    alt = 'Obrázek',
+    caption = '',
+    width = '100%',
+    height = 'auto',
+    borderRadius = '8px',
+    objectFit = 'cover',
+    shadow = 'none'
+  } = props;
+
+  const getShadowClass = () => {
+    switch (shadow) {
+      case 'small':
+        return 'shadow-sm';
+      case 'medium':
+        return 'shadow-md';
+      case 'large':
+        return 'shadow-lg';
+      case 'xl':
+        return 'shadow-xl';
+      default:
+        return '';
+    }
+  };
+
+  return (
+    <div className="text-center" style={style}>
+      <div className="relative inline-block">
+        <img
+          src={src}
+          alt={alt}
+          className={`${getShadowClass()} transition-all duration-300 hover:scale-105`}
+          style={{
+            width,
+            height,
+            borderRadius,
+            objectFit,
+            maxWidth: '100%'
+          }}
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            target.src = '/placeholder.jpg';
+          }}
+        />
+        
+        {!isPreviewMode && (
+          <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+            <div className="opacity-0 hover:opacity-100 transition-opacity text-white text-sm font-medium">
+              Klikněte pro úpravu
+            </div>
+          </div>
+        )}
+      </div>
+      
+      {caption && (
+        <p className="mt-2 text-sm text-gray-600 italic">
+          {caption}
+        </p>
+      )}
+    </div>
+  );
+} 

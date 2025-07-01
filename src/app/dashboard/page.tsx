@@ -17,6 +17,7 @@ type App = {
   status: 'draft' | 'published';
   app_title?: string;
   welcome_message?: string;
+  user_owner?: string; // Přidáno pro bezpečnostní kontrolu
   // Přidej další pole, která máš v kolekci
 };
 
@@ -42,7 +43,14 @@ async function copyDir(src: string, dest: string) {
 async function buildAppAction(formData: FormData) {
   'use server'
 
+  const session = await getServerSession(authOptions);
+  if (!session || !(session.user as any)?.id) {
+    throw new Error("Nepřihlášený uživatel!");
+  }
+
   const appId = formData.get('appId') as string
+  const userId = (session.user as any).id;
+  
   if (!appId) {
     throw new Error("Chybí App ID!")
   }
@@ -55,8 +63,15 @@ async function buildAppAction(formData: FormData) {
 
   try {
     // 1. Načteme data aplikace z Directusu
-    const app = await directusAdmin.request(readItem('apps', appId)) as App
+    const app = await directusAdmin.request(readItem('apps', appId, {
+      fields: ['id', 'name', 'status', 'slug', 'app_title', 'welcome_message', 'user_owner']
+    })) as App
     console.log(`Načtena data pro aplikaci: ${app.name}`)
+
+    // BEZPEČNOSTNÍ KONTROLA: Ověříme, že aplikace patří přihlášenému uživateli
+    if (!app.user_owner || app.user_owner !== userId) {
+      throw new Error("Nemáte oprávnění k sestavení této aplikace!");
+    }
 
     if (!app.slug) {
       throw new Error(`Aplikace s ID ${appId} nemá definovaný slug.`)
@@ -102,7 +117,7 @@ async function buildAppAction(formData: FormData) {
   revalidatePath('/dashboard')
 }
 
-async function getAppsForUser(accessToken: string): Promise<App[]> {
+async function getAppsForUser(accessToken: string, userId: string): Promise<App[]> {
   try {
     const userDirectus = createDirectus(process.env.DIRECTUS_URL!)
       .with(staticToken(accessToken))
@@ -112,12 +127,25 @@ async function getAppsForUser(accessToken: string): Promise<App[]> {
       readItems('apps', {
         // Přidáváme všechna pole, která potřebujeme
         fields: ['id', 'name', 'status', 'slug', 'app_title', 'welcome_message'],
+        // KRITICKÉ: Filtrujeme pouze aplikace patřící přihlášenému uživateli
+        filter: {
+          user_owner: { _eq: userId }
+        }
       })
     )
     return apps as App[]
-  } catch (error) {
+  } catch (error: any) {
     console.error("Chyba při načítání aplikací z Directusu:", error)
-    return [] // V případě chyby vrátíme prázdné pole
+    
+    // Kontrola, zda je chyba způsobená neplatným tokenem
+    if (error?.response?.status === 401 || 
+        error?.message?.includes('Invalid user credentials') ||
+        error?.errors?.[0]?.message?.includes('Invalid user credentials')) {
+      console.log('Detekována chyba s tokenem, přesměrovávám na přihlášení')
+      throw new Error('TOKEN_EXPIRED')
+    }
+    
+    return [] // V případě jiné chyby vrátíme prázdné pole
   }
 }
 
@@ -128,8 +156,25 @@ export default async function DashboardPage() {
     redirect('/')
   }
   
+  // Kontrola chyby refresh tokenu nebo chybějícího access tokenu
+  if (session.error === 'RefreshAccessTokenError' || !session.accessToken) {
+    console.log('Refresh token error or missing access token detected, redirecting to login');
+    redirect('/?error=RefreshAccessTokenError')
+  }
+  
   const userAccessToken = (session as any).accessToken
-  const userApps = await getAppsForUser(userAccessToken)
+  let userApps: App[] = []
+  
+  try {
+    userApps = await getAppsForUser(userAccessToken, (session as any).user.id)
+  } catch (error: any) {
+    if (error.message === 'TOKEN_EXPIRED') {
+      console.log('Token expired, redirecting to login')
+      redirect('/?error=TokenExpired')
+    }
+    // Pro jiné chyby pokračujeme s prázdným polem aplikací
+    console.error('Unexpected error loading apps:', error)
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -162,7 +207,7 @@ export default async function DashboardPage() {
                     </span>
           </div>
                   <div className="flex items-center space-x-4">
-                    <button className="text-blue-600 hover:underline">Spravovat</button>
+                    <Link href={`/apps/${app.id}/builder`} className="text-blue-600 hover:underline">Spravovat</Link>
                     <form action={buildAppAction}>
                       <input type="hidden" name="appId" value={app.id} />
                       <button 

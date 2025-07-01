@@ -1,16 +1,27 @@
 'use client'
 
 import Image from 'next/image'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import AuthModal from '@/components/AuthModal'
 import { useSession, signIn, signOut } from 'next-auth/react'
 import { User } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 export default function Home() {
   const [showAuth, setShowAuth] = useState<null | 'login' | 'register'>(null)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const { data: session } = useSession()
   const router = useRouter()
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    const error = searchParams.get('error')
+    if (error === 'RefreshAccessTokenError') {
+      setErrorMessage('Vaše přihlášení vypršelo. Přihlaste se prosím znovu.')
+    } else if (error === 'TokenExpired') {
+      setErrorMessage('Vaše přihlášení vypršelo. Přihlaste se prosím znovu.')
+    }
+  }, [searchParams])
 
   const handleEnterWorkshop = () => {
     if (session) {
@@ -154,6 +165,19 @@ export default function Home() {
 
       <div className="container mx-auto px-4 py-12 relative z-40">
         <div className="max-w-4xl mx-auto">
+          {/* Chybová zpráva */}
+          {errorMessage && (
+            <div className="mb-8 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+              <p className="text-center">{errorMessage}</p>
+              <button 
+                onClick={() => setErrorMessage(null)}
+                className="absolute top-2 right-2 text-red-500 hover:text-red-700"
+              >
+                ✕
+              </button>
+            </div>
+          )}
+          
           <div className="text-center mb-12">
             <h1 className="font-display text-6xl mb-4"
               style={{

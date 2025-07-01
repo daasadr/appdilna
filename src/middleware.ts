@@ -9,7 +9,8 @@ export default withAuth(
   {
     callbacks: {
       authorized: ({ req, token }) => {
-        if (req.nextUrl.pathname.startsWith("/dashboard")) {
+        if (req.nextUrl.pathname.startsWith("/dashboard") || 
+            req.nextUrl.pathname.startsWith("/apps/create")) {
           return !!token
         }
         return true
@@ -20,5 +21,5 @@ export default withAuth(
 
 // Nastavení, které cesty mají být chráněné
 export const config = {
-  matcher: ['/dashboard/:path*']
+  matcher: ['/dashboard/:path*', '/apps/create']
 } 

@@ -6,9 +6,30 @@ export interface Schema {
     id: string;
     name: string;
     slug: string;
-    template_id: string;
+    template_id?: string;
     settings: Record<string, any>;
     status: 'draft' | 'published';
+    user_owner?: string;
+    app_title?: string;
+    welcome_message?: string;
+    pages?: any[];
+    theme?: {
+      colors: {
+        primary: string;
+        secondary: string;
+        accent: string;
+        background: string;
+        text: string;
+      };
+      fonts: {
+        heading: string;
+        body: string;
+      };
+      spacing: string;
+      borderRadius: string;
+    };
+    createdAt?: string;
+    updatedAt?: string;
   };
   
   content_types: {

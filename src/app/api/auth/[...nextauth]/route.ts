@@ -42,27 +42,67 @@ interface AppUser extends User {
  */
 async function refreshAccessToken(token: JWT): Promise<JWT> {
   try {
-    const url = `${process.env.DIRECTUS_URL}/auth/refresh`;
-    const response = await fetch(url, {
+    console.log("[refreshAccessToken] Používám refreshToken:", token.refreshToken);
+    const payload = {
+      refresh_token: token.refreshToken,
+      mode: 'json'
+    };
+    console.log("[refreshAccessToken] Request payload:", payload);
+    const response = await fetch(`${process.env.DIRECTUS_URL}/auth/refresh`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        refresh_token: token.refreshToken,
-        mode: 'json'
-      }),
+      body: JSON.stringify(payload),
     });
+    const rawRefreshResponse = await response.clone().text();
+    console.log("[refreshAccessToken] Response:", rawRefreshResponse);
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('[refreshAccessToken] Refresh failed:', errorData);
+      
+      // Pokud je chyba "Invalid user credentials", token je neplatný
+      if (errorData?.errors?.[0]?.message?.includes('Invalid user credentials')) {
+        console.error('[refreshAccessToken] Invalid credentials detected, forcing logout');
+        return { 
+          ...token, 
+          error: 'RefreshAccessTokenError',
+          accessToken: undefined,
+          refreshToken: undefined 
+        };
+      }
+      
+      throw errorData;
+    }
+    
     const refreshedTokens = await response.json();
-    if (!response.ok) throw refreshedTokens;
     const newTokens = refreshedTokens.data;
+    console.log("[refreshAccessToken] newTokens.refresh_token:", newTokens.refresh_token, "old token.refreshToken:", token.refreshToken);
+    
+    if (!newTokens.refresh_token || typeof newTokens.refresh_token !== 'string' || newTokens.refresh_token.trim() === '') {
+      console.error('[refreshAccessToken] ERROR: Directus nevrátil platný refresh token! Uživatel bude odhlášen.');
+      return { 
+        ...token, 
+        error: 'RefreshAccessTokenError',
+        accessToken: undefined,
+        refreshToken: undefined 
+      };
+    }
+    
     return {
       ...token,
       accessToken: newTokens.access_token,
       accessTokenExpires: Date.now() + newTokens.expires,
-      refreshToken: newTokens.refresh_token ?? token.refreshToken,
+      refreshToken: newTokens.refresh_token,
+      error: undefined // Vyčistíme chybu při úspěšném refreshu
     };
   } catch (error) {
     console.error('Chyba při obnovování tokenu', error);
-    return { ...token, error: 'RefreshAccessTokenError' };
+    return { 
+      ...token, 
+      error: 'RefreshAccessTokenError',
+      accessToken: undefined,
+      refreshToken: undefined 
+    };
   }
 }
 
@@ -91,12 +131,16 @@ export const authOptions: NextAuthOptions = {
           }),
         });
 
+        const rawLoginResponse = await res.clone().text();
+        console.log("[Directus authorize] /auth/login response:", rawLoginResponse);
+
         if (!res.ok) {
-          console.log("Directus login failed:", await res.text());
+          console.log("Directus login failed:", rawLoginResponse);
           return null;
         }
 
         const { data } = await res.json();
+        console.log("[Directus authorize] parsed data:", data);
 
         // Získání uživatele
         const userRes = await fetch(`${process.env.DIRECTUS_URL}/users/me`, {
@@ -109,6 +153,8 @@ export const authOptions: NextAuthOptions = {
           email: userData.data.email,
           name: userData.data.first_name,
           accessToken: data.access_token,
+          refreshToken: data.refresh_token,
+          accessTokenExpires: Date.now() + data.expires,
         };
       },
     }),
@@ -121,26 +167,29 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async jwt({ token, user, account }) {
+      const userRefreshToken = (user && 'refreshToken' in user) ? (user as any).refreshToken : undefined;
+      console.log("[JWT callback] token před změnou:", JSON.stringify(token));
       if (user && account) {
         if (account.provider === 'credentials') {
-           token.accessToken = (user as AppUser).accessToken;
-           token.accessTokenExpires = (user as AppUser).accessTokenExpires;
-           token.refreshToken = (user as AppUser).refreshToken;
-           token.id = user.id;
+          token.accessToken = (user as AppUser).accessToken;
+          token.accessTokenExpires = (user as AppUser).accessTokenExpires;
+          token.refreshToken = (user as AppUser).refreshToken ?? token.refreshToken;
+          token.id = user.id;
         }
         else if (account.provider === 'google') {
           try {
             const res = await fetch(`${process.env.NEXTAUTH_URL}/api/login`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ email: user.email, isGoogle: true }),
+              body: JSON.stringify({ email: user.email, isGoogle: true, name: user.name }),
             });
             const loginData = await res.json();
             const { data, user: directusUser } = loginData;
+            console.log('[JWT callback][Google] loginData:', loginData);
             if (data && directusUser) {
               token.accessToken = data.access_token;
               token.accessTokenExpires = Date.now() + data.expires;
-              token.refreshToken = data.refresh_token;
+              token.refreshToken = data.refresh_token ?? token.refreshToken;
               token.id = directusUser.id;
             }
           } catch(e) {
@@ -149,21 +198,32 @@ export const authOptions: NextAuthOptions = {
           }
         }
       }
-      
+      token.refreshToken = token.refreshToken ?? undefined;
+      console.log("[JWT callback] token po změně:", JSON.stringify(token));
       if (Date.now() < (token.accessTokenExpires as number)) {
         return token;
       }
-      
       console.log("Access token expiroval, pokouším se o refresh...");
       return refreshAccessToken(token);
     },
 
     async session({ session, token }: { session: Session; token: JWT }) {
+      console.log('[Session callback] token:', JSON.stringify(token));
       if (token) {
         (session.user as any).id = token.id;
         session.accessToken = token.accessToken as string;
         session.error = token.error as string;
+        
+        // Pokud je chyba s refresh tokenem nebo chybí access token, odhlásíme uživatele
+        if (token.error === 'RefreshAccessTokenError' || !token.accessToken) {
+          console.log('Session error detected or missing access token, user will be logged out');
+          session.error = 'RefreshAccessTokenError';
+          // Vyčistíme session data
+          session.accessToken = undefined;
+          (session.user as any).id = undefined;
+        }
       }
+      console.log('[Session callback] session:', JSON.stringify(session));
       return session;
     },
   },
