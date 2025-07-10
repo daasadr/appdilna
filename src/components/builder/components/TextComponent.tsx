@@ -8,8 +8,8 @@ interface TextComponentProps {
 
 export function TextComponent({ props, style, isPreviewMode }: TextComponentProps) {
   const {
-    content = 'Zde napište svůj text...',
-    heading = '',
+    content,
+    heading,
     alignment = 'left',
     fontSize = '16px',
     fontWeight = 'normal',
@@ -23,6 +23,10 @@ export function TextComponent({ props, style, isPreviewMode }: TextComponentProp
     fontStyle = 'normal',
     textDecoration = 'none'
   } = props;
+
+  // Explicitní kontrola pro zobrazení textu - prázdný string se zobrazí jako prázdno
+  const displayContent = content === undefined ? 'Zde napište svůj text...' : content;
+  const displayHeading = heading === undefined ? '' : heading;
 
   const getAlignmentClass = () => {
     switch (alignment) {
@@ -85,15 +89,15 @@ export function TextComponent({ props, style, isPreviewMode }: TextComponentProp
         maxWidth: maxWidth === 'none' ? 'none' : maxWidth
       }}
     >
-      {heading && (
+      {displayHeading && (
         <h2 className="text-2xl font-bold mb-4">
-          {heading}
+          {displayHeading}
         </h2>
       )}
       
       <div 
         className="prose prose-lg max-w-none"
-        dangerouslySetInnerHTML={{ __html: content }}
+        dangerouslySetInnerHTML={{ __html: displayContent }}
       />
     </div>
   );

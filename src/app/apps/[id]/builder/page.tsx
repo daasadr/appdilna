@@ -22,6 +22,7 @@ import { Canvas } from '@/components/builder/Canvas';
 import { PropertyPanel } from '@/components/builder/PropertyPanel';
 import { Toolbar } from '@/components/builder/Toolbar';
 import { Component, Page, AppData } from '@/types/builder';
+import { componentCategories } from '@/components/builder/ComponentLibrary';
 
 export default function BuilderPage() {
   const params = useParams();
@@ -173,15 +174,31 @@ export default function BuilderPage() {
       },
     };
 
-    const componentType = componentTypes[type] || componentTypes.text;
-    
+    // Pokud typ není v componentTypes, použij defaultProps z knihovny (prázdné)
+    let componentType = componentTypes[type];
+    let style = {};
+    if (!componentType) {
+      // Zkus najít v ComponentLibrary
+      let found;
+      for (const cat of componentCategories) {
+        found = cat.components.find((c: any) => c.id === type);
+        if (found) break;
+      }
+      if (found) {
+        componentType = { name: found.name, defaultProps: found.defaultProps };
+        style = found.defaultStyle || {};
+      } else {
+        componentType = { name: type, defaultProps: {} };
+        style = {};
+      }
+    }
     return {
       id: `component-${Date.now()}-${Math.random()}`,
       type: type,
       name: componentType.name,
       props: componentType.defaultProps,
       position,
-      style: {},
+      style,
       children: []
     };
   };
@@ -280,6 +297,7 @@ export default function BuilderPage() {
                 onComponentDelete={deleteComponent}
                 viewMode={viewMode}
                 isPreviewMode={isPreviewMode}
+                onViewModeChange={setViewMode}
               />
             </SortableContext>
             
@@ -298,7 +316,10 @@ export default function BuilderPage() {
           <div className="w-80 bg-white border-l border-gray-200 overflow-y-auto">
             <PropertyPanel
               component={selectedComponent}
-              onUpdate={(updates) => updateComponent(selectedComponent.id, updates)}
+              onUpdate={(updates) => {
+                updateComponent(selectedComponent.id, updates);
+                setSelectedComponent((prev) => prev ? { ...prev, ...updates } : prev);
+              }}
             />
           </div>
         )}

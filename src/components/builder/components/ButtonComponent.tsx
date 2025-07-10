@@ -8,7 +8,7 @@ interface ButtonComponentProps {
 
 export function ButtonComponent({ props, style, isPreviewMode }: ButtonComponentProps) {
   const {
-    text = 'Klikněte zde',
+    text,
     variant = 'primary',
     size = 'medium',
     link = '#',
@@ -16,6 +16,9 @@ export function ButtonComponent({ props, style, isPreviewMode }: ButtonComponent
     fullWidth = false,
     disabled = false
   } = props;
+
+  // Explicitní kontrola pro zobrazení textu - prázdný string se zobrazí jako prázdno
+  const displayText = text === undefined ? 'Klikněte zde' : text;
 
   const getVariantClasses = () => {
     const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2';
@@ -75,7 +78,7 @@ export function ButtonComponent({ props, style, isPreviewMode }: ButtonComponent
             {icon}
           </span>
         )}
-        {text}
+        {displayText}
       </a>
     </div>
   );

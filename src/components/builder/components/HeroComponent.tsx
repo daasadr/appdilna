@@ -8,15 +8,20 @@ interface HeroComponentProps {
 
 export function HeroComponent({ props, style, isPreviewMode }: HeroComponentProps) {
   const {
-    title = 'Vítejte na našich stránkách',
-    subtitle = 'Vytvořte si úžasnou webovou aplikaci',
-    buttonText = 'Začít',
+    title,
+    subtitle,
+    buttonText,
     buttonLink = '#',
     backgroundImage = '',
     backgroundColor = '#f8fafc',
     textColor = '#1f2937',
     buttonVariant = 'primary'
   } = props;
+
+  // Explicitní kontrola pro zobrazení textu - prázdný string se zobrazí jako prázdno
+  const displayTitle = title === undefined ? 'Vítejte na našich stránkách' : title;
+  const displaySubtitle = subtitle === undefined ? 'Vytvořte si úžasnou webovou aplikaci' : subtitle;
+  const displayButtonText = buttonText === undefined ? 'Začít' : buttonText;
 
   const getButtonStyles = () => {
     const baseStyles = 'px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:scale-105';
@@ -62,17 +67,17 @@ export function HeroComponent({ props, style, isPreviewMode }: HeroComponentProp
           className="text-4xl md:text-6xl font-bold mb-6 leading-tight"
           style={{ textShadow: backgroundImage ? '2px 2px 4px rgba(0,0,0,0.5)' : 'none' }}
         >
-          {title}
+          {displayTitle}
         </h1>
         
         <p 
           className="text-xl md:text-2xl mb-8 opacity-90 leading-relaxed"
           style={{ textShadow: backgroundImage ? '1px 1px 2px rgba(0,0,0,0.5)' : 'none' }}
         >
-          {subtitle}
+          {displaySubtitle}
         </p>
         
-        {buttonText && (
+        {displayButtonText && (
           <a
             href={isPreviewMode ? buttonLink : '#'}
             className={`inline-block ${getButtonStyles()}`}
@@ -82,7 +87,7 @@ export function HeroComponent({ props, style, isPreviewMode }: HeroComponentProp
               }
             }}
           >
-            {buttonText}
+            {displayButtonText}
           </a>
         )}
       </div>

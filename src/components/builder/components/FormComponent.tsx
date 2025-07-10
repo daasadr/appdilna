@@ -10,13 +10,17 @@ interface FormComponentProps {
 
 export function FormComponent({ props, style, isPreviewMode }: FormComponentProps) {
   const {
-    title = 'Kontaktujte nás',
+    title,
     fields = ['name', 'email', 'message'],
-    submitText = 'Odeslat',
+    submitText,
     submitUrl = '/api/contact',
     successMessage = 'Děkujeme za zprávu!',
     errorMessage = 'Došlo k chybě. Zkuste to prosím znovu.'
   } = props;
+
+  // Explicitní kontrola pro zobrazení textu - prázdný string se zobrazí jako prázdno
+  const displayTitle = title === undefined ? 'Kontaktujte nás' : title;
+  const displaySubmitText = submitText === undefined ? 'Odeslat' : submitText;
 
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -126,7 +130,7 @@ export function FormComponent({ props, style, isPreviewMode }: FormComponentProp
 
   return (
     <div className="max-w-md mx-auto" style={style}>
-      <h2 className="text-2xl font-bold text-center mb-6">{title}</h2>
+      <h2 className="text-2xl font-bold text-center mb-6">{displayTitle}</h2>
       
       <form onSubmit={handleSubmit} className="space-y-4">
         {fields.map(renderField)}
@@ -136,7 +140,7 @@ export function FormComponent({ props, style, isPreviewMode }: FormComponentProp
           disabled={!isPreviewMode || isSubmitting}
           className="w-full bg-blue-600 text-white py-3 px-4 rounded-md font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isSubmitting ? 'Odesílám...' : submitText}
+          {isSubmitting ? 'Odesílám...' : displaySubmitText}
         </button>
       </form>
 

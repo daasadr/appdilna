@@ -52,7 +52,7 @@ export default function AuthModal({ mode = 'login', onClose }: { mode?: 'login' 
         const res = await signIn('credentials', {
           email: formData.email,
           password: formData.password,
-          callbackUrl: '/dashboard',
+          callbackUrl: '/',
           redirect: false
         })
 
@@ -61,7 +61,7 @@ export default function AuthModal({ mode = 'login', onClose }: { mode?: 'login' 
         } else {
           setMessage(null)
           onClose?.()
-          router.push('/dashboard')
+          router.push('/')
         }
       }
     } catch (error) {

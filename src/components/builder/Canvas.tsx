@@ -143,8 +143,9 @@ export function Canvas({
   onComponentUpdate,
   onComponentDelete,
   viewMode,
-  isPreviewMode
-}: CanvasProps) {
+  isPreviewMode,
+  onViewModeChange
+}: CanvasProps & { onViewModeChange: (mode: ViewMode) => void }) {
   const getViewModeStyles = () => {
     switch (viewMode) {
       case 'mobile':
@@ -171,7 +172,7 @@ export function Canvas({
               <span className="text-sm font-medium text-gray-700">Náhled:</span>
               <div className="flex bg-gray-100 rounded-lg p-1">
                 <button
-                  onClick={() => onComponentUpdate('viewMode', { viewMode: 'desktop' })}
+                  onClick={() => onViewModeChange('desktop')}
                   className={`p-2 rounded-md transition-colors ${
                     viewMode === 'desktop' 
                       ? 'bg-white shadow-sm' 
@@ -181,7 +182,7 @@ export function Canvas({
                   <Monitor className="w-4 h-4" />
                 </button>
                 <button
-                  onClick={() => onComponentUpdate('viewMode', { viewMode: 'tablet' })}
+                  onClick={() => onViewModeChange('tablet')}
                   className={`p-2 rounded-md transition-colors ${
                     viewMode === 'tablet' 
                       ? 'bg-white shadow-sm' 
@@ -191,7 +192,7 @@ export function Canvas({
                   <Tablet className="w-4 h-4" />
                 </button>
                 <button
-                  onClick={() => onComponentUpdate('viewMode', { viewMode: 'mobile' })}
+                  onClick={() => onViewModeChange('mobile')}
                   className={`p-2 rounded-md transition-colors ${
                     viewMode === 'mobile' 
                       ? 'bg-white shadow-sm' 
@@ -217,6 +218,7 @@ export function Canvas({
         <div
           className={`min-h-full bg-white rounded-lg shadow-sm border-2 border-gray-200 ${getViewModeStyles()}`}
           onClick={handleCanvasClick}
+          style={{ maxHeight: '80vh', overflowY: 'auto' }}
         >
           {/* Page Content */}
           <div className="p-4">

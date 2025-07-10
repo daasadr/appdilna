@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { ContentBlock } from '@/types/template';
-import { directus } from '@/lib/directus';
-import { readItems, updateItems, createItems } from '@directus/sdk';
+import { createDirectus, rest, token as directusToken, readItems, updateItems, createItems } from '@directus/sdk';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -12,6 +13,13 @@ export async function GET(request: Request) {
   }
 
   try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.accessToken) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    const directus = createDirectus(process.env.DIRECTUS_URL!)
+      .with(rest())
+      .with(directusToken(session.accessToken));
     const sections = await directus.request(readItems('sections', {
       filter: { id: { _eq: sectionId } }
     }));
@@ -30,6 +38,13 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.accessToken) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    const directus = createDirectus(process.env.DIRECTUS_URL!)
+      .with(rest())
+      .with(directusToken(session.accessToken));
     const body = await request.json();
     const { sectionId, content } = body;
 
@@ -58,6 +73,13 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.accessToken) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    const directus = createDirectus(process.env.DIRECTUS_URL!)
+      .with(rest())
+      .with(directusToken(session.accessToken));
     const body = await request.json();
     const { sectionId, content } = body;
 

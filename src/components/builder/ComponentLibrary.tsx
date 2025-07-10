@@ -33,7 +33,7 @@ interface ComponentLibraryProps {
   onComponentDrop: (componentType: string, position: number) => void;
 }
 
-const componentCategories: ComponentCategory[] = [
+export const componentCategories: ComponentCategory[] = [
   {
     id: 'layout',
     name: 'Rozvržení',
@@ -87,11 +87,19 @@ const componentCategories: ComponentCategory[] = [
         icon: 'Settings',
         description: 'Spodní část stránky s odkazy a informacemi',
         defaultProps: {
-          copyright: '© 2024 Vaše společnost',
-          links: [
-            { text: 'Ochrana osobních údajů', href: '/privacy' },
-            { text: 'Podmínky použití', href: '/terms' }
-          ]
+          logo: '',
+          logoImage: '',
+          description: '',
+          links: [],
+          socialLinks: [],
+          contactInfo: { email: '', phone: '', address: '' },
+          copyright: '',
+          showLogo: false,
+          showDescription: false,
+          showContact: false,
+          showNewsletter: false,
+          newsletterText: '',
+          newsletterPlaceholder: ''
         },
         defaultStyle: {
           backgroundColor: '#f8f9fa',

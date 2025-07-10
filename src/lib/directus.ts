@@ -52,6 +52,36 @@ export interface Schema {
     data: Record<string, any>;
     status: 'draft' | 'published';
   };
+
+  sections: {
+    id: string;
+    app_id: string;
+    name: string;
+    content: any[];
+    order: number;
+    createdAt?: string;
+    updatedAt?: string;
+  };
+
+  published_versions: {
+    id: string;
+    app_id: string;
+    version: number;
+    sections: any[];
+    published_at: string;
+    created_at?: string;
+  };
+
+  templates: {
+    id: string;
+    name: string;
+    description?: string;
+    thumbnail?: string;
+    sections: any[];
+    settings: Record<string, any>;
+    created_at?: string;
+    updated_at?: string;
+  };
 }
 
 export const directus = createDirectus<Schema>(process.env.DIRECTUS_URL!)

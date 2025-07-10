@@ -9,14 +9,18 @@ interface ImageComponentProps {
 export function ImageComponent({ props, style, isPreviewMode }: ImageComponentProps) {
   const {
     src = '/placeholder.jpg',
-    alt = 'Obrázek',
-    caption = '',
+    alt,
+    caption,
     width = '100%',
     height = 'auto',
     borderRadius = '8px',
     objectFit = 'cover',
     shadow = 'none'
   } = props;
+
+  // Explicitní kontrola pro zobrazení textu - prázdný string se zobrazí jako prázdno
+  const displayAlt = alt === undefined ? 'Obrázek' : alt;
+  const displayCaption = caption === undefined ? '' : caption;
 
   const getShadowClass = () => {
     switch (shadow) {
@@ -38,7 +42,7 @@ export function ImageComponent({ props, style, isPreviewMode }: ImageComponentPr
       <div className="relative inline-block">
         <img
           src={src}
-          alt={alt}
+          alt={displayAlt}
           className={`${getShadowClass()} transition-all duration-300 hover:scale-105`}
           style={{
             width,
@@ -62,9 +66,9 @@ export function ImageComponent({ props, style, isPreviewMode }: ImageComponentPr
         )}
       </div>
       
-      {caption && (
+      {displayCaption && (
         <p className="mt-2 text-sm text-gray-600 italic">
-          {caption}
+          {displayCaption}
         </p>
       )}
     </div>

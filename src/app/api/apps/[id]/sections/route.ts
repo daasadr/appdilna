@@ -1,12 +1,20 @@
 import { NextResponse } from 'next/server';
-import { directus } from '@/lib/directus';
-import { readItems } from '@directus/sdk';
+import { createDirectus, rest, token as directusToken, readItems } from '@directus/sdk';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.accessToken) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    const directus = createDirectus(process.env.DIRECTUS_URL!)
+      .with(rest())
+      .with(directusToken(session.accessToken));
     const sections = await directus.request(readItems('sections', {
       filter: {
         page: {

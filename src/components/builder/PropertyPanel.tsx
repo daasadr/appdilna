@@ -155,6 +155,252 @@ export function PropertyPanel({ component, onUpdate }: PropertyPanelProps) {
           </div>
         );
 
+      case 'footer':
+        return (
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Logo (text)</label>
+              <input
+                type="text"
+                value={component.props.logo || ''}
+                onChange={(e) => updateProps('logo', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Popis</label>
+              <textarea
+                value={component.props.description || ''}
+                onChange={(e) => updateProps('description', e.target.value)}
+                rows={2}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Copyright</label>
+              <input
+                type="text"
+                value={component.props.copyright || ''}
+                onChange={(e) => updateProps('copyright', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
+              <input
+                type="email"
+                value={component.props.contactInfo?.email || ''}
+                onChange={(e) => updateProps('contactInfo', { ...component.props.contactInfo, email: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Telefon</label>
+              <input
+                type="text"
+                value={component.props.contactInfo?.phone || ''}
+                onChange={(e) => updateProps('contactInfo', { ...component.props.contactInfo, phone: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Adresa</label>
+              <input
+                type="text"
+                value={component.props.contactInfo?.address || ''}
+                onChange={(e) => updateProps('contactInfo', { ...component.props.contactInfo, address: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Text newsletteru</label>
+              <input
+                type="text"
+                value={component.props.newsletterText || ''}
+                onChange={(e) => updateProps('newsletterText', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Placeholder newsletteru</label>
+              <input
+                type="text"
+                value={component.props.newsletterPlaceholder || ''}
+                onChange={(e) => updateProps('newsletterPlaceholder', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Sekce odkazů</label>
+              {(component.props.links || []).map((section: any, sectionIdx: number) => (
+                <div key={sectionIdx} className="mb-4 border rounded p-2 bg-gray-50">
+                  <input
+                    type="text"
+                    value={section.title || ''}
+                    onChange={e => {
+                      const newLinks = [...component.props.links];
+                      newLinks[sectionIdx] = { ...newLinks[sectionIdx], title: e.target.value };
+                      updateProps('links', newLinks);
+                    }}
+                    className="w-full mb-2 px-2 py-1 border border-gray-300 rounded text-sm"
+                    placeholder="Název sekce"
+                  />
+                  {(section.items || []).map((item: any, itemIdx: number) => (
+                    <div key={itemIdx} className="flex gap-2 mb-1">
+                      <input
+                        type="text"
+                        value={item.text || ''}
+                        onChange={e => {
+                          const newLinks = [...component.props.links];
+                          newLinks[sectionIdx].items[itemIdx] = { ...item, text: e.target.value };
+                          updateProps('links', newLinks);
+                        }}
+                        className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm"
+                        placeholder="Text odkazu"
+                      />
+                      <input
+                        type="text"
+                        value={item.href || ''}
+                        onChange={e => {
+                          const newLinks = [...component.props.links];
+                          newLinks[sectionIdx].items[itemIdx] = { ...item, href: e.target.value };
+                          updateProps('links', newLinks);
+                        }}
+                        className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm"
+                        placeholder="URL"
+                      />
+                      <button
+                        type="button"
+                        className="text-red-500 text-xs px-2"
+                        onClick={() => {
+                          const newLinks = [...component.props.links];
+                          newLinks[sectionIdx].items.splice(itemIdx, 1);
+                          updateProps('links', newLinks);
+                        }}
+                        title="Smazat odkaz"
+                      >✕</button>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    className="text-blue-600 text-xs mt-1"
+                    onClick={() => {
+                      const newLinks = [...component.props.links];
+                      newLinks[sectionIdx].items.push({ text: '', href: '' });
+                      updateProps('links', newLinks);
+                    }}
+                  >+ Přidat odkaz</button>
+                  <button
+                    type="button"
+                    className="text-red-500 text-xs ml-2"
+                    onClick={() => {
+                      const newLinks = [...component.props.links];
+                      newLinks.splice(sectionIdx, 1);
+                      updateProps('links', newLinks);
+                    }}
+                  >Smazat sekci</button>
+                </div>
+              ))}
+              <button
+                type="button"
+                className="text-blue-600 text-xs"
+                onClick={() => {
+                  const newLinks = [...(component.props.links || [])];
+                  newLinks.push({ title: '', items: [] });
+                  updateProps('links', newLinks);
+                }}
+              >+ Přidat sekci</button>
+            </div>
+            {/* Sociální sítě */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Sociální sítě</label>
+              {(component.props.socialLinks || []).map((social: any, idx: number) => (
+                <div key={idx} className="flex gap-2 mb-1 items-center">
+                  <select
+                    value={social.platform}
+                    onChange={e => {
+                      const newSocial = [...component.props.socialLinks];
+                      newSocial[idx] = { ...newSocial[idx], platform: e.target.value };
+                      updateProps('socialLinks', newSocial);
+                    }}
+                    className="px-2 py-1 border border-gray-300 rounded text-sm"
+                  >
+                    <option value="facebook">Facebook</option>
+                    <option value="twitter">Twitter</option>
+                    <option value="instagram">Instagram</option>
+                    <option value="linkedin">LinkedIn</option>
+                  </select>
+                  <input
+                    type="text"
+                    value={social.url || ''}
+                    onChange={e => {
+                      const newSocial = [...component.props.socialLinks];
+                      newSocial[idx] = { ...newSocial[idx], url: e.target.value };
+                      updateProps('socialLinks', newSocial);
+                    }}
+                    className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm"
+                    placeholder="URL"
+                  />
+                  <button
+                    type="button"
+                    className="text-red-500 text-xs px-2"
+                    onClick={() => {
+                      const newSocial = [...component.props.socialLinks];
+                      newSocial.splice(idx, 1);
+                      updateProps('socialLinks', newSocial);
+                    }}
+                    title="Smazat sociální síť"
+                  >✕</button>
+                </div>
+              ))}
+              <button
+                type="button"
+                className="text-blue-600 text-xs"
+                onClick={() => {
+                  const newSocial = [...(component.props.socialLinks || [])];
+                  newSocial.push({ platform: 'facebook', url: '' });
+                  updateProps('socialLinks', newSocial);
+                }}
+              >+ Přidat sociální síť</button>
+            </div>
+            {/* Přepínače sekcí */}
+            <div className="flex flex-wrap gap-4 mt-2">
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={component.props.showLogo !== false}
+                  onChange={e => updateProps('showLogo', e.target.checked)}
+                />
+                Zobrazit logo
+              </label>
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={component.props.showDescription !== false}
+                  onChange={e => updateProps('showDescription', e.target.checked)}
+                />
+                Zobrazit popis
+              </label>
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={component.props.showContact !== false}
+                  onChange={e => updateProps('showContact', e.target.checked)}
+                />
+                Zobrazit kontakt
+              </label>
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={component.props.showNewsletter !== false}
+                  onChange={e => updateProps('showNewsletter', e.target.checked)}
+                />
+                Zobrazit newsletter
+              </label>
+            </div>
+          </div>
+        );
+
       default:
         return (
           <div className="text-center text-gray-500 py-8">

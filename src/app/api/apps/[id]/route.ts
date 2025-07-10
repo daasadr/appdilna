@@ -24,20 +24,20 @@ export async function GET(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || !(session.user as any)?.id) {
+    if (!session || !(session.user as any)?.id || !session.accessToken) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const userId = (session.user as any).id;
     const appId = params.id;
 
-    // Použijeme admin token pro načítání dat
-    const directusAdmin = createDirectus(process.env.DIRECTUS_URL!)
-      .with(staticToken(process.env.DIRECTUS_ADMIN_TOKEN!))
-      .with(rest());
+    // Použijeme uživatelský access token
+    const directus = createDirectus(process.env.DIRECTUS_URL!)
+      .with(rest())
+      .with(staticToken(session.accessToken));
 
     // Načteme aplikaci
-    const app = await directusAdmin.request(readItem('apps', appId, {
+    const app = await directus.request(readItem('apps', appId, {
       fields: ['id', 'name', 'slug', 'status', 'app_title', 'welcome_message', 'user_owner', 'pages', 'settings', 'theme']
     })) as App;
 
@@ -108,7 +108,7 @@ export async function PUT(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || !(session.user as any)?.id) {
+    if (!session || !(session.user as any)?.id || !session.accessToken) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -116,13 +116,13 @@ export async function PUT(
     const appId = params.id;
     const updateData = await request.json();
 
-    // Použijeme admin token pro aktualizaci dat
-    const directusAdmin = createDirectus(process.env.DIRECTUS_URL!)
-      .with(staticToken(process.env.DIRECTUS_ADMIN_TOKEN!))
-      .with(rest());
+    // Použijeme uživatelský access token
+    const directus = createDirectus(process.env.DIRECTUS_URL!)
+      .with(rest())
+      .with(staticToken(session.accessToken));
 
     // Nejdříve ověříme, že aplikace patří uživateli
-    const existingApp = await directusAdmin.request(readItem('apps', appId, {
+    const existingApp = await directus.request(readItem('apps', appId, {
       fields: ['user_owner']
     })) as App;
 
@@ -131,7 +131,7 @@ export async function PUT(
     }
 
     // Aktualizujeme aplikaci
-    const updatedApp = await directusAdmin.request(updateItem('apps', appId, {
+    const updatedApp = await directus.request(updateItem('apps', appId, {
       ...updateData,
       updatedAt: new Date().toISOString()
     }));
@@ -144,4 +144,4 @@ export async function PUT(
       { status: 500 }
     );
   }
-} 
+}

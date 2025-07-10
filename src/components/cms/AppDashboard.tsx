@@ -1,23 +1,33 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { directus } from '@/lib/directus';
-import { readItems } from '@directus/sdk';
-import { Schema } from '@/lib/directus';
+import { createDirectus, rest, staticToken, readItems } from '@directus/sdk';
 
 export function AppDashboard({ appId }: { appId: string }) {
   const { data: app } = useQuery({
     queryKey: ['app', appId],
-    queryFn: () => directus.request(readItems('apps', {
-      filter: { id: { _eq: appId } }
-    }))
+    queryFn: async () => {
+      const directus = createDirectus(process.env.NEXT_PUBLIC_DIRECTUS_URL!)
+        .with(staticToken(process.env.NEXT_PUBLIC_DIRECTUS_ADMIN_TOKEN!))
+        .with(rest());
+      
+      return directus.request(readItems('apps', {
+        filter: { id: { _eq: appId } }
+      }));
+    }
   });
 
   const { data: contentTypes } = useQuery({
     queryKey: ['contentTypes', appId],
-    queryFn: () => directus.request(readItems('content_types', {
-      filter: { app_id: { _eq: appId } }
-    }))
+    queryFn: async () => {
+      const directus = createDirectus(process.env.NEXT_PUBLIC_DIRECTUS_URL!)
+        .with(staticToken(process.env.NEXT_PUBLIC_DIRECTUS_ADMIN_TOKEN!))
+        .with(rest());
+      
+      return directus.request(readItems('content_types', {
+        filter: { app_id: { _eq: appId } }
+      }));
+    }
   });
 
   return (
@@ -25,7 +35,7 @@ export function AppDashboard({ appId }: { appId: string }) {
       <h1 className="text-2xl font-bold mb-4">{app?.[0]?.name || 'Načítám...'}</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {contentTypes?.map(type => (
+        {contentTypes?.map((type: any) => (
           <div key={type.id} className="border p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow">
             <h2 className="text-xl mb-2">{type.name}</h2>
             <p className="text-gray-600 mb-4">
