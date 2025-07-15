@@ -1,8 +1,8 @@
 import { ContentDisplay } from '@/components/content/ContentDisplay';
-import { ContentBlock } from '@/types/template';
-import { notFound } from 'next/navigation';
 import { directus } from '@/lib/directus';
+import { ContentBlock } from '@/types/template';
 import { readItems } from '@directus/sdk';
+import { notFound } from 'next/navigation';
 
 export const revalidate = 3600; // Revalidace každou hodinu
 
@@ -41,4 +41,4 @@ export default async function AppPage({ params }: { params: { id: string } }) {
       </div>
     </div>
   );
-} 
+}

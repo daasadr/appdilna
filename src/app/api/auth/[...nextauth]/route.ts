@@ -1,10 +1,7 @@
-import NextAuth, { NextAuthOptions, User, Account, Session } from "next-auth"
+import NextAuth, { NextAuthOptions, Session, User } from "next-auth"
 import type { JWT } from "next-auth/jwt"
-import GoogleProvider from "next-auth/providers/google"
 import CredentialsProvider from "next-auth/providers/credentials"
-import { directus } from '@/lib/directus'
-import { readMe, readUsers } from '@directus/sdk'
-import bcrypt from 'bcryptjs'
+import GoogleProvider from "next-auth/providers/google"
 
 if (!process.env.NEXTAUTH_URL) {
   throw new Error('Missing NEXTAUTH_URL environment variable')
@@ -55,39 +52,39 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
     });
     const rawRefreshResponse = await response.clone().text();
     console.log("[refreshAccessToken] Response:", rawRefreshResponse);
-    
+
     if (!response.ok) {
       const errorData = await response.json();
       console.error('[refreshAccessToken] Refresh failed:', errorData);
-      
+
       // Pokud je chyba "Invalid user credentials", token je neplatný
       if (errorData?.errors?.[0]?.message?.includes('Invalid user credentials')) {
         console.error('[refreshAccessToken] Invalid credentials detected, forcing logout');
-        return { 
-          ...token, 
+        return {
+          ...token,
           error: 'RefreshAccessTokenError',
           accessToken: undefined,
-          refreshToken: undefined 
+          refreshToken: undefined
         };
       }
-      
+
       throw errorData;
     }
-    
+
     const refreshedTokens = await response.json();
     const newTokens = refreshedTokens.data;
     console.log("[refreshAccessToken] newTokens.refresh_token:", newTokens.refresh_token, "old token.refreshToken:", token.refreshToken);
-    
+
     if (!newTokens.refresh_token || typeof newTokens.refresh_token !== 'string' || newTokens.refresh_token.trim() === '') {
       console.error('[refreshAccessToken] ERROR: Directus nevrátil platný refresh token! Uživatel bude odhlášen.');
-      return { 
-        ...token, 
+      return {
+        ...token,
         error: 'RefreshAccessTokenError',
         accessToken: undefined,
-        refreshToken: undefined 
+        refreshToken: undefined
       };
     }
-    
+
     return {
       ...token,
       accessToken: newTokens.access_token,
@@ -97,11 +94,11 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
     };
   } catch (error) {
     console.error('Chyba při obnovování tokenu', error);
-    return { 
-      ...token, 
+    return {
+      ...token,
       error: 'RefreshAccessTokenError',
       accessToken: undefined,
-      refreshToken: undefined 
+      refreshToken: undefined
     };
   }
 }
@@ -213,7 +210,7 @@ export const authOptions: NextAuthOptions = {
         (session.user as any).id = token.id;
         session.accessToken = token.accessToken as string;
         session.error = token.error as string;
-        
+
         // Pokud je chyba s refresh tokenem nebo chybí access token, odhlásíme uživatele
         if (token.error === 'RefreshAccessTokenError' || !token.accessToken) {
           console.log('Session error detected or missing access token, user will be logged out');
@@ -231,4 +228,4 @@ export const authOptions: NextAuthOptions = {
 
 const handler = NextAuth(authOptions);
 
-export { handler as GET, handler as POST }; 
+export { handler as GET, handler as POST }

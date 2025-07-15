@@ -1,12 +1,11 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
+import { directus, Schema } from '@/lib/directus';
+import { createItems, readItems, updateItems } from '@directus/sdk';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
-import { directus } from '@/lib/directus';
-import { readItems, createItems, updateItems } from '@directus/sdk';
-import { Schema } from '@/lib/directus';
 
 interface ContentEditorProps {
   appId: string;
@@ -45,11 +44,11 @@ export function ContentEditor({ appId, contentTypeId, contentId }: ContentEditor
   const createSchema = (fields: Schema['content_types']['fields']) => {
     const schemaFields = fields.reduce((acc, field) => ({
       ...acc,
-      [field.name]: field.required 
+      [field.name]: field.required
         ? z.string().min(1, 'Toto pole je povinné')
         : z.string().optional()
     }), {});
-    
+
     return z.object(schemaFields);
   };
 
@@ -89,7 +88,7 @@ export function ContentEditor({ appId, contentTypeId, contentId }: ContentEditor
             {field.name}
             {field.required && <span className="text-red-500">*</span>}
           </label>
-          
+
           {field.type === 'rich_text' ? (
             <textarea
               {...register(field.name)}
@@ -110,7 +109,7 @@ export function ContentEditor({ appId, contentTypeId, contentId }: ContentEditor
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             />
           )}
-          
+
           {errors[field.name] && (
             <p className="mt-1 text-sm text-red-600">
               {errors[field.name]?.message as string}
@@ -118,16 +117,16 @@ export function ContentEditor({ appId, contentTypeId, contentId }: ContentEditor
           )}
         </div>
       ))}
-      
+
       <div className="flex justify-end gap-3">
-        <button 
+        <button
           type="button"
           className="px-4 py-2 border rounded-md hover:bg-gray-50"
           onClick={() => window.history.back()}
         >
           Zrušit
         </button>
-        <button 
+        <button
           type="submit"
           className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
           disabled={mutation.isPending}
@@ -137,4 +136,4 @@ export function ContentEditor({ appId, contentTypeId, contentId }: ContentEditor
       </div>
     </form>
   );
-} 
+}

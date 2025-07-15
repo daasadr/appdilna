@@ -1,19 +1,19 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { directus } from '@/lib/directus';
-import { readUsers, createUsers } from '@directus/sdk';
+import { readUsers } from '@directus/sdk';
 import bcrypt from 'bcryptjs';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
   try {
     console.log('Register API called');
     console.log('DIRECTUS_URL:', process.env.DIRECTUS_URL);
     console.log('DIRECTUS_ADMIN_TOKEN exists:', !!process.env.DIRECTUS_ADMIN_TOKEN);
-    
+
     const { name, email, password } = await req.json();
 
     if (!email || !password || !name) {
-      return NextResponse.json({ 
-        message: 'Všechna pole jsou povinná.' 
+      return NextResponse.json({
+        message: 'Všechna pole jsou povinná.'
       }, { status: 400 });
     }
 
@@ -22,10 +22,10 @@ export async function POST(req: NextRequest) {
       const existingUsers = await directus.request(readUsers({
         filter: { email: { _eq: email } }
       }));
-      
+
       if (existingUsers && existingUsers.length > 0) {
-        return NextResponse.json({ 
-          message: 'Uživatel s tímto emailem již existuje.' 
+        return NextResponse.json({
+          message: 'Uživatel s tímto emailem již existuje.'
         }, { status: 409 });
       }
     } catch (error) {
@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
       throw new Error('Nepodařilo se vytvořit uživatele');
     }
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       message: 'Uživatel byl úspěšně vytvořen.',
       user: {
         id: newUser.data.id,
@@ -78,15 +78,15 @@ export async function POST(req: NextRequest) {
 
   } catch (error: any) {
     console.error('API Register Error:', error);
-    
+
     if (error.message?.includes('already exists')) {
-      return NextResponse.json({ 
-        message: 'Uživatel s tímto emailem již existuje.' 
+      return NextResponse.json({
+        message: 'Uživatel s tímto emailem již existuje.'
       }, { status: 409 });
     }
-    
-    return NextResponse.json({ 
-      message: 'Došlo k chybě při registraci. Zkuste to prosím znovu.' 
+
+    return NextResponse.json({
+      message: 'Došlo k chybě při registraci. Zkuste to prosím znovu.'
     }, { status: 500 });
   }
-} 
+}

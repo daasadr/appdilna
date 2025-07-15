@@ -1,5 +1,3 @@
-import { createDirectus, rest, staticToken, readItems, createItems, readUsers, createUsers } from '@directus/sdk';
-
 // Typy pro kolekce
 export interface Schema {
   apps: {
@@ -31,7 +29,7 @@ export interface Schema {
     createdAt?: string;
     updatedAt?: string;
   };
-  
+
   content_types: {
     id: string;
     app_id: string;
@@ -44,7 +42,7 @@ export interface Schema {
       options?: Record<string, any>;
     }[];
   };
-  
+
   content: {
     id: string;
     app_id: string;
@@ -83,7 +81,3 @@ export interface Schema {
     updated_at?: string;
   };
 }
-
-export const directus = createDirectus<Schema>(process.env.DIRECTUS_URL!)
-  .with(staticToken(process.env.DIRECTUS_ADMIN_TOKEN!))
-  .with(rest()); 

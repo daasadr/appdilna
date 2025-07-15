@@ -1,12 +1,12 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { useMutation } from '@tanstack/react-query';
 import { directus } from '@/lib/directus';
 import { createItems } from '@directus/sdk';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 const createAppSchema = z.object({
   name: z.string().min(1, 'Název aplikace je povinný'),
@@ -42,7 +42,7 @@ export function CreateAppForm() {
     <form onSubmit={handleSubmit(data => mutation.mutate(data))} className="space-y-6 max-w-md mx-auto p-6">
       <div>
         <h1 className="text-2xl font-bold mb-6">Vytvořit novou aplikaci</h1>
-        
+
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -90,4 +90,4 @@ export function CreateAppForm() {
       </div>
     </form>
   );
-} 
+}

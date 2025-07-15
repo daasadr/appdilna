@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { directus } from '@/lib/directus';
-import { login, readMe, readUsers } from '@directus/sdk';
+import { readMe, readUsers } from '@directus/sdk';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,11 +14,11 @@ export async function POST(req: NextRequest) {
 
     let loginResponse;
     let user;
-    
+
     if (isGoogle) {
       // Pro Google přihlášení najdeme uživatele a vytvoříme token
-      const users = await directus.request(readUsers({ 
-        filter: { email: { _eq: email } } 
+      const users = await directus.request(readUsers({
+        filter: { email: { _eq: email } }
       }));
       if (users.length === 0) {
         // Pokud uživatel neexistuje, vytvoříme ho
@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
       // Vygenerujeme token pro uživatele pomocí admin API
       const tokenResponse = await fetch(`${process.env.DIRECTUS_URL}/auth/login/${user.id}/token`, {
         method: 'POST',
-        headers: { 
+        headers: {
           'Authorization': `Bearer ${process.env.DIRECTUS_ADMIN_TOKEN}`,
           'Content-Type': 'application/json'
         },
@@ -67,17 +67,17 @@ export async function POST(req: NextRequest) {
       }
       // Po úspěšném přihlášení získáme data o uživateli
       const userDirectus = directus.withToken(data.access_token);
-      const userInfo = await userDirectus.request(readMe({ 
-        fields: ['id', 'first_name', 'email'] 
+      const userInfo = await userDirectus.request(readMe({
+        fields: ['id', 'first_name', 'email']
       }));
       // Vracíme data, která očekává NextAuth
-      return NextResponse.json({ 
+      return NextResponse.json({
         data: {
           access_token: data.access_token,
           expires: data.expires || 900000, // 15 minut default
           refresh_token: data.refresh_token
-        }, 
-        user: userInfo 
+        },
+        user: userInfo
       });
     }
     // Klasické přihlášení s heslem
@@ -95,16 +95,16 @@ export async function POST(req: NextRequest) {
       const tokenData = await tokenResponse.json();
       if (!tokenResponse.ok) {
         console.error('Directus login error:', tokenData);
-        return NextResponse.json({ 
-          message: 'Nesprávný email nebo heslo.' 
+        return NextResponse.json({
+          message: 'Nesprávný email nebo heslo.'
         }, { status: 401 });
       }
       console.log('Login successful, token data received');
       loginResponse = { data: tokenData.data };
     } catch (loginError: any) {
       console.error('Directus login error:', loginError);
-      return NextResponse.json({ 
-        message: 'Nesprávný email nebo heslo.' 
+      return NextResponse.json({
+        message: 'Nesprávný email nebo heslo.'
       }, { status: 401 });
     }
     const { data } = loginResponse;
@@ -114,21 +114,21 @@ export async function POST(req: NextRequest) {
     }
     // Po úspěšném přihlášení získáme data o uživateli
     const userDirectus = directus.withToken(data.access_token);
-    const userInfo = await userDirectus.request(readMe({ 
-      fields: ['id', 'first_name', 'email'] 
+    const userInfo = await userDirectus.request(readMe({
+      fields: ['id', 'first_name', 'email']
     }));
     // Vracíme data, která očekává NextAuth
-    return NextResponse.json({ 
+    return NextResponse.json({
       data: {
         access_token: data.access_token,
         expires: data.expires || 900000, // 15 minut default
         refresh_token: data.refresh_token
-      }, 
-      user: userInfo 
+      },
+      user: userInfo
     });
   } catch (error) {
     console.error('API Login Error:', error);
     const errorMessage = error.message || 'Došlo k neznámé chybě při přihlašování.';
     return NextResponse.json({ message: errorMessage }, { status: 401 });
   }
-} 
+}

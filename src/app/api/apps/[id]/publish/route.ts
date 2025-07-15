@@ -1,7 +1,7 @@
-import { NextResponse } from 'next/server';
-import { revalidatePath } from 'next/cache';
 import { directus } from '@/lib/directus';
-import { readItems, updateItems, createItems } from '@directus/sdk';
+import { createItems, readItems, updateItems } from '@directus/sdk';
+import { revalidatePath } from 'next/cache';
+import { NextResponse } from 'next/server';
 
 export async function POST(
   request: Request,
@@ -71,4 +71,4 @@ export async function POST(
       { status: 500 }
     );
   }
-} 
+}
