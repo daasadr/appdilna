@@ -1,6 +1,19 @@
 # AppDílna
 
-Komerční no-code/low-code platforma pro generování progresivních webových aplikací (PWA).
+no-code/low-code platforma pro generování progresivních webových aplikací (PWA).
+
+## 📑 Obsah
+
+- [🚀 Rychlý Start](#-rychlý-start)
+- [🛠️ Technologie](#️-technologie)
+- [📝 Vývojářské Nástroje](#-vývojářské-nástroje)
+  - [Pre-commit Hooks](#pre-commit-hooks)
+- [📁 Struktura Projektu](#-struktura-projektu)
+- [🔧 Dostupné Skripty](#-dostupné-skripty)
+- [🔐 Nastavení Prostředí](#-nastavení-prostředí)
+- [📖 Další Dokumentace](#-další-dokumentace)
+- [🤝 Přispívání](#-přispívání)
+- [📄 Licence](#-licence)
 
 ## 🚀 Rychlý Start
 
@@ -19,7 +32,7 @@ npm run dev
 ## 🛠️ Technologie
 
 - **Frontend:** Next.js 14 s TypeScript
-- **Backend/CMS:** Directus
+- **Backend:** Directus
 - **Autentizace:** NextAuth.js
 - **Styling:** Tailwind CSS
 - **Databáze:** Spravovaná Directusem
@@ -33,12 +46,13 @@ Projekt je nastaven s automatickými pre-commit hooks, které zajišťují kvali
 #### Co se kontroluje při každém commitu:
 
 - **🔍 TypeScript kontrola typů** - `tsc --noEmit`
-- **🧹 ESLint linting** - `eslint --fix` (s automatickými opravami)
 - **💅 Prettier formátování** - `prettier --write` (s automatickým formátováním)
+
+> **Poznámka:** ESLint linting je třeba spustit manuálně pomocí `npm run lint:fix` kvůli konfiguračním problémům s ESLint v9.
 
 #### Podporované soubory:
 
-- **JS/TS soubory** (`.js`, `.jsx`, `.ts`, `.tsx`): kontrola typů + linting + formátování
+- **JS/TS soubory** (`.js`, `.jsx`, `.ts`, `.tsx`): kontrola typů + formátování
 - **Ostatní soubory** (`.json`, `.css`, `.md`): pouze formátování
 
 #### Ruční spuštění kontrol:
