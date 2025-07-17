@@ -1,14 +1,14 @@
-require('dotenv').config();
-const { PrismaClient } = require('@prisma/client');
-const { createDirectus, rest, createItems } = require('@directus/sdk');
+require('dotenv').config()
+const { PrismaClient } = require('@prisma/client')
+const { createDirectus, rest, createItems } = require('@directus/sdk')
 
-const prisma = new PrismaClient();
-const directus = createDirectus(process.env.DIRECTUS_URL).with(rest());
+const prisma = new PrismaClient()
+const directus = createDirectus(process.env.DIRECTUS_URL).with(rest())
 
 async function migrateApps() {
   try {
     // 1. Načti všechny appky z původní DB
-    const apps = await prisma.apps.findMany();
+    const apps = await prisma.apps.findMany()
 
     for (const app of apps) {
       // 2. Připrav data pro Directus (případně uprav strukturu podle nových polí)
@@ -19,22 +19,22 @@ async function migrateApps() {
         template_id: app.template_id,
         settings: app.settings,
         status: app.status,
-      };
+      }
 
       // 3. Zapiš do Directusu
       try {
-        await directus.request(createItems('apps', [newApp]));
-        console.log(`Migrated app: ${app.name}`);
+        await directus.request(createItems('apps', [newApp]))
+        console.log(`Migrated app: ${app.name}`)
       } catch (e) {
-        console.error(`Failed to migrate app ${app.name}:`, e.message);
+        console.error(`Failed to migrate app ${app.name}:`, e.message)
       }
     }
-    console.log('Migration finished!');
+    console.log('Migration finished!')
   } catch (e) {
-    console.error('Migration error:', e);
+    console.error('Migration error:', e)
   } finally {
-    await prisma.$disconnect();
+    await prisma.$disconnect()
   }
 }
 
-migrateApps(); 
+migrateApps()

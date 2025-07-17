@@ -1,5 +1,5 @@
-import { withAuth } from "next-auth/middleware"
-import { NextResponse } from "next/server"
+import { withAuth } from 'next-auth/middleware'
+import { NextResponse } from 'next/server'
 
 export default withAuth(
   function middleware(req) {
@@ -9,8 +9,10 @@ export default withAuth(
   {
     callbacks: {
       authorized: ({ req, token }) => {
-        if (req.nextUrl.pathname.startsWith("/dashboard") || 
-            req.nextUrl.pathname.startsWith("/apps/create")) {
+        if (
+          req.nextUrl.pathname.startsWith('/dashboard') ||
+          req.nextUrl.pathname.startsWith('/apps/create')
+        ) {
           return !!token
         }
         return true
@@ -21,5 +23,5 @@ export default withAuth(
 
 // Nastavení, které cesty mají být chráněné
 export const config = {
-  matcher: ['/dashboard/:path*', '/apps/create']
-} 
+  matcher: ['/dashboard/:path*', '/apps/create'],
+}

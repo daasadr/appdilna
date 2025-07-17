@@ -32,17 +32,12 @@ export default function AuthModal({ mode = 'login', onClose }: AuthModalProps) {
   }
 
   if (session) {
-    return (
-      <UserProfile
-        user={session.user!}
-        onSignOut={() => signOut()}
-      />
-    )
+    return <UserProfile user={session.user!} onSignOut={() => signOut()} />
   }
 
   return (
     <div>
-      <h2 className="text-2xl font-display text-copper mb-6 text-center">
+      <h2 className="mb-6 text-center font-display text-2xl text-copper">
         {currentMode === 'register' ? 'Registrace' : 'Přihlášení'}
       </h2>
 
@@ -54,19 +49,11 @@ export default function AuthModal({ mode = 'login', onClose }: AuthModalProps) {
         isLoading={isLoading}
       />
 
-      <AuthMessage
-        message={message}
-        isSuccess={isSuccess}
-      />
+      <AuthMessage message={message} isSuccess={isSuccess} />
 
-      <AuthModeToggle
-        currentMode={currentMode}
-        onToggle={switchMode}
-      />
+      <AuthModeToggle currentMode={currentMode} onToggle={switchMode} />
 
-      <GoogleSignInButton
-        onSignIn={handleGoogleSignIn}
-      />
+      <GoogleSignInButton onSignIn={handleGoogleSignIn} />
     </div>
   )
 }

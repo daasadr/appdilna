@@ -1,1 +1,1 @@
-declare module '@dnd-kit/sortable'; 
+declare module '@dnd-kit/sortable'

@@ -21,14 +21,16 @@ export default function AuthError() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-parchment/10">
-      <div className="max-w-md w-full mx-4">
-        <div className="bg-white/80 p-8 rounded-lg shadow-lg border border-copper/20">
-          <h1 className="text-2xl font-display text-copper mb-4">Chyba přihlášení</h1>
-          <p className="text-gray-600 mb-6">{getErrorMessage(error)}</p>
-          <Link 
+    <div className="flex min-h-screen items-center justify-center bg-parchment/10">
+      <div className="mx-4 w-full max-w-md">
+        <div className="rounded-lg border border-copper/20 bg-white/80 p-8 shadow-lg">
+          <h1 className="mb-4 font-display text-2xl text-copper">
+            Chyba přihlášení
+          </h1>
+          <p className="mb-6 text-gray-600">{getErrorMessage(error)}</p>
+          <Link
             href="/"
-            className="block w-full px-4 py-2 bg-copper text-white rounded-lg hover:bg-copper/90 transition-colors text-center"
+            className="block w-full rounded-lg bg-copper px-4 py-2 text-center text-white transition-colors hover:bg-copper/90"
           >
             Zpět na hlavní stránku
           </Link>
@@ -36,4 +38,4 @@ export default function AuthError() {
       </div>
     </div>
   )
-} 
+}

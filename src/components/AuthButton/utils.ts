@@ -11,12 +11,18 @@ export const woodButtonStyle = {
 }
 
 // Helper function to format user display name
-export const formatUserDisplayName = (user: { name?: string | null; email?: string | null }) => {
+export const formatUserDisplayName = (user: {
+  name?: string | null
+  email?: string | null
+}) => {
   return user.name || user.email || 'Unknown User'
 }
 
 // Helper function to get button text based on mode and loading state
-export const getButtonText = (mode: 'login' | 'register', isLoading: boolean) => {
+export const getButtonText = (
+  mode: 'login' | 'register',
+  isLoading: boolean
+) => {
   if (isLoading) {
     return mode === 'register' ? 'Registruji...' : 'Přihlašuji...'
   }

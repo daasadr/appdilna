@@ -2,7 +2,8 @@ export default function PwaPage() {
   return (
     <div className="relative min-h-screen overflow-hidden">
       {/* Wood textura - na celé pozadí */}
-      <div className="absolute inset-0 z-0"
+      <div
+        className="absolute inset-0 z-0"
         style={{
           backgroundImage: "url('/images/wood-texture.webp')",
           backgroundRepeat: 'no-repeat',
@@ -11,9 +12,9 @@ export default function PwaPage() {
         }}
       />
       {/* Gradient pro plynulý přechod sekce do dřeva */}
-      <div className="relative z-10 flex justify-center items-start min-h-screen py-16 px-2">
+      <div className="relative z-10 flex min-h-screen items-start justify-center px-2 py-16">
         <div
-          className="max-w-3xl w-full mx-auto p-8 rounded-3xl overflow-visible"
+          className="mx-auto w-full max-w-3xl overflow-visible rounded-3xl p-8"
           style={{
             background: 'rgba(245,241,230,0.58)', // částečná průhlednost
             borderRadius: '2rem',
@@ -41,32 +42,82 @@ export default function PwaPage() {
             }}
           />
           <article className="relative z-10">
-            <h1 className="font-display text-4xl text-copper mb-6 text-center">Co je to PWA a jaké jsou její výhody?</h1>
+            <h1 className="mb-6 text-center font-display text-4xl text-copper">
+              Co je to PWA a jaké jsou její výhody?
+            </h1>
             <p className="mb-4 text-lg text-ink">
-              <strong>PWA</strong> (Progressive Web App, česky progresivní webová aplikace) je moderní typ webové aplikace, která vypadá a chová se jako nativní mobilní aplikace, ale běží přímo ve webovém prohlížeči. Uživatel si ji může přidat na plochu, spouštět ji offline a využívat notifikace nebo další pokročilé funkce.
+              <strong>PWA</strong> (Progressive Web App, česky progresivní
+              webová aplikace) je moderní typ webové aplikace, která vypadá a
+              chová se jako nativní mobilní aplikace, ale běží přímo ve webovém
+              prohlížeči. Uživatel si ji může přidat na plochu, spouštět ji
+              offline a využívat notifikace nebo další pokročilé funkce.
             </p>
-            <h2 className="font-display text-2xl text-copper mt-8 mb-2">Výhody PWA</h2>
-            <ul className="list-disc pl-6 mb-4 text-ink">
-              <li><strong>Snadná instalace</strong> – uživatel si aplikaci přidá na plochu jedním kliknutím, bez nutnosti App Store/Google Play.</li>
-              <li><strong>Offline režim</strong> – aplikace funguje i bez připojení k internetu (díky Service Workerům).</li>
-              <li><strong>Rychlost</strong> – PWA se načítají velmi rychle díky cachování a optimalizaci.</li>
-              <li><strong>Aktualizace</strong> – vždy aktuální verze, uživatel nemusí nic stahovat ručně.</li>
-              <li><strong>Push notifikace</strong> – možnost zasílat upozornění přímo na zařízení uživatele.</li>
-              <li><strong>Responsivita</strong> – perfektní zobrazení na mobilech, tabletech i počítačích.</li>
-              <li><strong>Nižší náklady</strong> – není třeba vyvíjet zvlášť pro iOS, Android a web.</li>
+            <h2 className="mb-2 mt-8 font-display text-2xl text-copper">
+              Výhody PWA
+            </h2>
+            <ul className="mb-4 list-disc pl-6 text-ink">
+              <li>
+                <strong>Snadná instalace</strong> – uživatel si aplikaci přidá
+                na plochu jedním kliknutím, bez nutnosti App Store/Google Play.
+              </li>
+              <li>
+                <strong>Offline režim</strong> – aplikace funguje i bez
+                připojení k internetu (díky Service Workerům).
+              </li>
+              <li>
+                <strong>Rychlost</strong> – PWA se načítají velmi rychle díky
+                cachování a optimalizaci.
+              </li>
+              <li>
+                <strong>Aktualizace</strong> – vždy aktuální verze, uživatel
+                nemusí nic stahovat ručně.
+              </li>
+              <li>
+                <strong>Push notifikace</strong> – možnost zasílat upozornění
+                přímo na zařízení uživatele.
+              </li>
+              <li>
+                <strong>Responsivita</strong> – perfektní zobrazení na mobilech,
+                tabletech i počítačích.
+              </li>
+              <li>
+                <strong>Nižší náklady</strong> – není třeba vyvíjet zvlášť pro
+                iOS, Android a web.
+              </li>
             </ul>
-            <h2 className="font-display text-2xl text-copper mt-8 mb-2">Nevýhody a omezení PWA</h2>
-            <ul className="list-disc pl-6 mb-4 text-ink">
-              <li><strong>Omezený přístup k některým funkcím zařízení</strong> (např. Bluetooth, NFC, některé hardwarové senzory).</li>
-              <li><strong>Podpora v App Store</strong> – PWA nelze přímo publikovat do App Store (iOS), pouze na Google Play s omezeními.</li>
-              <li><strong>iOS omezení</strong> – některé funkce (notifikace, offline režim) jsou na iOS omezené nebo fungují jinak než na Androidu.</li>
+            <h2 className="mb-2 mt-8 font-display text-2xl text-copper">
+              Nevýhody a omezení PWA
+            </h2>
+            <ul className="mb-4 list-disc pl-6 text-ink">
+              <li>
+                <strong>Omezený přístup k některým funkcím zařízení</strong>{' '}
+                (např. Bluetooth, NFC, některé hardwarové senzory).
+              </li>
+              <li>
+                <strong>Podpora v App Store</strong> – PWA nelze přímo
+                publikovat do App Store (iOS), pouze na Google Play s omezeními.
+              </li>
+              <li>
+                <strong>iOS omezení</strong> – některé funkce (notifikace,
+                offline režim) jsou na iOS omezené nebo fungují jinak než na
+                Androidu.
+              </li>
             </ul>
-            <h2 className="font-display text-2xl text-copper mt-8 mb-2">Kdy je PWA správná volba?</h2>
+            <h2 className="mb-2 mt-8 font-display text-2xl text-copper">
+              Kdy je PWA správná volba?
+            </h2>
             <p className="mb-4 text-lg text-ink">
-              PWA je ideální pro projekty, kde chcete rychle a levně nabídnout uživatelům aplikaci dostupnou na všech zařízeních, bez nutnosti složitého schvalování v obchodech. Skvěle se hodí pro firemní aplikace, katalogy, rezervační systémy, jednoduché e-shopy, blogy, informační portály a mnoho dalšího.
+              PWA je ideální pro projekty, kde chcete rychle a levně nabídnout
+              uživatelům aplikaci dostupnou na všech zařízeních, bez nutnosti
+              složitého schvalování v obchodech. Skvěle se hodí pro firemní
+              aplikace, katalogy, rezervační systémy, jednoduché e-shopy, blogy,
+              informační portály a mnoho dalšího.
             </p>
             <p className="mb-2 text-ink">
-              Pokud potřebujete plný přístup k hardwaru zařízení, nebo chcete být v App Store, je lepší zvolit nativní vývoj. Pro většinu běžných projektů je však PWA moderní, rychlé a uživatelsky přívětivé řešení.
+              Pokud potřebujete plný přístup k hardwaru zařízení, nebo chcete
+              být v App Store, je lepší zvolit nativní vývoj. Pro většinu
+              běžných projektů je však PWA moderní, rychlé a uživatelsky
+              přívětivé řešení.
             </p>
           </article>
         </div>
@@ -74,13 +125,13 @@ export default function PwaPage() {
       {/* Stylový kulatý button Domů */}
       <a
         href="/"
-        className="fixed top-8 right-8 z-50"
+        className="fixed right-8 top-8 z-50"
         style={{
           textDecoration: 'none',
         }}
       >
         <button
-          className="w-16 h-16 flex items-center justify-center rounded-full shadow-lg border hover:scale-110 transition-transform duration-200"
+          className="flex h-16 w-16 items-center justify-center rounded-full border shadow-lg transition-transform duration-200 hover:scale-110"
           style={{
             backgroundImage: "url('/images/wood.png')",
             backgroundSize: 'cover',
@@ -102,18 +153,45 @@ export default function PwaPage() {
           aria-label="Domů"
         >
           {/* SVG domeček s dřevěným gradientem */}
-          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg
+            width="32"
+            height="32"
+            viewBox="0 0 32 32"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
             <defs>
-              <linearGradient id="woodHouse" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+              <linearGradient
+                id="woodHouse"
+                x1="0"
+                y1="0"
+                x2="32"
+                y2="32"
+                gradientUnits="userSpaceOnUse"
+              >
                 <stop stopColor="#b87333" />
                 <stop offset="1" stopColor="#6b4f27" />
               </linearGradient>
             </defs>
-            <path d="M6 16L16 7L26 16V26C26 26.5523 25.5523 27 25 27H7C6.44772 27 6 26.5523 6 26V16Z" fill="url(#woodHouse)" stroke="#6b4f27" strokeWidth="2" />
-            <rect x="12" y="20" width="8" height="7" rx="1.5" fill="#fff8e1" stroke="#b87333" strokeWidth="1.5" />
+            <path
+              d="M6 16L16 7L26 16V26C26 26.5523 25.5523 27 25 27H7C6.44772 27 6 26.5523 6 26V16Z"
+              fill="url(#woodHouse)"
+              stroke="#6b4f27"
+              strokeWidth="2"
+            />
+            <rect
+              x="12"
+              y="20"
+              width="8"
+              height="7"
+              rx="1.5"
+              fill="#fff8e1"
+              stroke="#b87333"
+              strokeWidth="1.5"
+            />
           </svg>
         </button>
       </a>
     </div>
   )
-} 
+}

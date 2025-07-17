@@ -20,7 +20,9 @@ These ADRs document the key architectural decisions that shape the AppDílna pla
 Main Decisions:
 
 ### Decision
+
 We chose the following technology stack:
+
 - **Frontend & API:** Next.js 14 with TypeScript
 - **Backend/CMS:** Directus as headless CMS
 - **Authentication:** NextAuth.js v4
@@ -29,6 +31,7 @@ We chose the following technology stack:
 - **Deployment:** Node.js environment
 
 ### Rationale
+
 - **Next.js:** Provides full-stack capabilities, excellent developer experience, built-in API routes, SSR/SSG capabilities
 - **Directus:** Offers robust headless CMS with built-in user management, cache management and well optimised API generation
 - **NextAuth.js:** Industry-standard authentication solution with multiple provider support
@@ -36,31 +39,37 @@ We chose the following technology stack:
 - **TypeScript:** Type safety reduces bugs and improves developer experience
 
 ### Consequences
+
 - **Positive:** Fast development, type safety, excellent ecosystem, scalable architecture
 - **Negative:** Vendor lock-in to Directus
-- **Neutral:** Directus has favourable pricing and had open-source fork 
+- **Neutral:** Directus has favourable pricing and had open-source fork
 
 ---
 
 ### Authentification
+
 Implement NextAuth.js with dual authentication providers:
+
 1. **Credentials Provider:** Email/password authentication via Directus API
 2. **Google OAuth Provider:** Social login with automatic user creation in Directus
 3. **JWT Strategy:** For session management with access/refresh token handling
 
 Authentication flow:
+
 1. NextAuth.js handles authentication
 2. Credentials verified against Directus /auth/login
 3. JWT tokens stored in session with auto-refresh
 4. User ownership verified for all app operations
 
 ### Rationale
+
 - **NextAuth.js:** Handles complex authentication flows, security best practices
 - **Directus Integration:** Centralizes user management, leverages existing user/role system
 - **JWT with Refresh:** Secure, stateless sessions with automatic token renewal
 - **Multiple Providers:** Reduces friction for user registration/login
 
 ### Consequences
+
 - **Positive:** Secure authentication, good UX, centralized user management
 - **Negative:** Complex token refresh logic, requires careful error handling
 - **Risk:** Token management complexity could lead to session issues
@@ -69,12 +78,14 @@ Authentication flow:
 
 Drag-and-Drop Builder Architecture
 
-
 ### Context
+
 The core feature is a visual drag-and-drop builder allowing users to create PWAs without coding knowledge.
 
 ### Decision
+
 Implement a component-based builder using:
+
 - **@dnd-kit/core** for drag-and-drop functionality
 - **Component Library** with categorized, reusable components
 - **Canvas** for visual editing with live preview
@@ -82,12 +93,14 @@ Implement a component-based builder using:
 - **Responsive Preview** with device-specific views
 
 ### Rationale
+
 - **@dnd-kit:** Modern, accessible drag-and-drop with great TypeScript support
 - **Component-Based:** Modular, reusable, easy to extend
 - **Click-to-Add:** Better UX than traditional drag-and-drop for component selection
 - **Live Preview:** Immediate visual feedback improves user experience
 
 ### Consequences
+
 - **Positive:** Intuitive user interface, extensible component system, good performance
 - **Negative:** Complex state management, requires careful component isolation
 - **Future:** Need to add undo/redo functionality, nested components
@@ -100,12 +113,14 @@ Implement a component-based builder using:
 
 **Date:** 2024-12-19  
 **Status:** Accepted  
-**Deciders:** Development Team  
+**Deciders:** Development Team
 
 ### Context
+
 The builder interface and generated PWAs must perform well across various devices and network conditions.
 
 ### Decision
+
 Implement **multi-faceted performance optimization**:
 
 1. **Next.js Optimizations:**
@@ -129,12 +144,14 @@ Implement **multi-faceted performance optimization**:
    - Progressive loading
 
 ### Rationale
+
 - **User Experience:** Fast interfaces improve user satisfaction
 - **SEO Benefits:** Performance affects search rankings
 - **Resource Efficiency:** Lower server costs, better scalability
 - **Mobile Support:** Essential for PWA success
 
 ### Consequences
+
 - **Positive:** Better user experience, lower operational costs, improved SEO
 - **Negative:** Additional development complexity, need for performance monitoring
 - **Future:** Need performance budgets, automated testing, advanced caching strategies
@@ -142,6 +159,7 @@ Implement **multi-faceted performance optimization**:
 ---
 
 Key Principles
+
 - Use functional, declarative programming. Avoid classes.
 - Write concise, well structured codewith accurate TypeScript definitions.
 - Prefer iteration and modularization over duplication.
@@ -150,30 +168,35 @@ Key Principles
 - Favor named exports for components.
 
 Key Conventions
+
 1. Rely on Next.js App Router for state changes and routing.
 2. Prioritize Web Vitals (LCP, CLS, FID).
 3. Minimize 'use client' usage:
-    - Prefer server components and Next.js SSR features.
-    - Use 'use client' only for Web API access in small components or where its advisable for offline first approach.
-    - Avoid using 'use client' for data fetching or state management.
+   - Prefer server components and Next.js SSR features.
+   - Use 'use client' only for Web API access in small components or where its advisable for offline first approach.
+   - Avoid using 'use client' for data fetching or state management.
 4. Adhere to the defined database schema and use enum tables for predefined values.
 
 TypeScript
+
 - always use types for props of function definition
-- always use types for return type of a function declaration 
+- always use types for return type of a function declaration
 
 JavaScript/TypeScript
+
 - Use "function" keyword for pure functions. Omit semicolons.
 - Use TypeScript for all code. Prefer interfaces over types.
 - File structure: Exported component, subcomponents, helpers, content, types.
 - Use concise, one-line syntax for simple conditional statements (e.g., if (condition) doSomething()).
 
 Documentation
+
 - Provide clear and concise comments for complex logic.
 - Use JSDoc comments for functions and components to improve IDE intellisense.
 - Keep the README.md files up-to-date with setup instructions and overview of the main aspects of the project.
 
 Styling
+
 - Accessibility friendly first
 - use Tailwind CSS, following the Utility First approach.
 - Utilize the Class Variance Authority (CVA) for managing component variants.
@@ -182,14 +205,17 @@ Styling
 - responsive mobile-first approach
 
 Data Fetching and State Management
+
 - Use React Server Components for data fetching when possible.
 - Refer to Next.js documentation for Data Fetching, Rendering, and Routing best practices and to the
 
 Forms
+
 - use React Query for offline first experience
 - use Nextjs Server Actions when offline first approach is not neccessary
 
 Component Structure
+
 - in /src/components/ folder
 - Break down components into smaller parts with minimal props.
 - Use composition to build complex components.
@@ -200,6 +226,7 @@ Component Structure
 - use /lib/hooks/ a directory for custom React hooks which are shared among multiple components
 
 Error Handling and Validation
+
 - Prioritize error handling and edge cases:
 - Handle errors and edge cases at the beginning of functions.
 - Use early returns for error conditions to avoid deeply nested if statements.
@@ -209,6 +236,7 @@ Error Handling and Validation
 - Implement proper error logging and user-friendly error messages.
 
 React/Next.js
+
 - Use functional components and TypeScript interfaces.
 - Use declarative JSX.
 - use React ecosystem standard camel case
@@ -230,12 +258,13 @@ React/Next.js
 - Use next-safe-action for all server actions.
 - Implement type-safe server actions with proper validation.
 - Handle errors gracefully and return appropriate responses.
-Naming Conventions
+  Naming Conventions
 - Booleans: Use auxiliary verbs such as 'does', 'has', 'is', and 'should' (e.g., isDisabled, hasError).
 - Filenames: Use lowercase with dash separators (e.g., auth-wizard.tsx).
 - File extensions: Use .config.ts, .test.ts, .context.tsx, .type.ts, .hook.ts as appropriate.
 
 Accessibility
+
 - Ensure interfaces are keyboard navigable.
 - Implement proper ARIA labels and roles for components.
 - Ensure color contrast ratios meet WCAG standards for readability.

@@ -4,10 +4,12 @@ import { formatUserDisplayName, woodButtonStyle } from './utils'
 export default function UserProfile({ user, onSignOut }: UserProfileProps) {
   return (
     <div className="flex flex-col items-center gap-4">
-      <span className="text-copper">Jste přihlášen(a) jako {formatUserDisplayName(user)}</span>
+      <span className="text-copper">
+        Jste přihlášen(a) jako {formatUserDisplayName(user)}
+      </span>
       <button
         onClick={onSignOut}
-        className="px-4 py-2 rounded-full shadow-lg border border-copper/40 hover:scale-105 transition-transform duration-200"
+        className="rounded-full border border-copper/40 px-4 py-2 shadow-lg transition-transform duration-200 hover:scale-105"
         style={woodButtonStyle}
       >
         Odhlásit se

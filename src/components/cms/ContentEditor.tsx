@@ -1,87 +1,115 @@
-'use client';
+'use client'
 
-import { directus, Schema } from '@/lib/directus';
-import { createItems, readItems, updateItems } from '@directus/sdk';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { directus, Schema } from '@/lib/directus'
+import { createItems, readItems, updateItems } from '@directus/sdk'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
 
 interface ContentEditorProps {
-  appId: string;
-  contentTypeId: string;
-  contentId?: string;
+  appId: string
+  contentTypeId: string
+  contentId?: string
 }
 
-export function ContentEditor({ appId, contentTypeId, contentId }: ContentEditorProps) {
-  const queryClient = useQueryClient();
+export function ContentEditor({
+  appId,
+  contentTypeId,
+  contentId,
+}: ContentEditorProps) {
+  const queryClient = useQueryClient()
 
   // Načtení typu obsahu
   const { data: contentType } = useQuery({
     queryKey: ['contentType', contentTypeId],
     queryFn: async () => {
-      const result = await directus.request(readItems('content_types', {
-        filter: { id: { _eq: contentTypeId } }
-      }));
-      return result[0];
-    }
-  });
+      const result = await directus.request(
+        readItems('content_types', {
+          filter: { id: { _eq: contentTypeId } },
+        })
+      )
+      return result[0]
+    },
+  })
 
   // Načtení existujícího obsahu pro editaci
   const { data: existingContent } = useQuery({
     queryKey: ['content', contentId],
     queryFn: async () => {
-      if (!contentId) return null;
-      const result = await directus.request(readItems('content', {
-        filter: { id: { _eq: contentId } }
-      }));
-      return result[0];
+      if (!contentId) return null
+      const result = await directus.request(
+        readItems('content', {
+          filter: { id: { _eq: contentId } },
+        })
+      )
+      return result[0]
     },
-    enabled: !!contentId
-  });
+    enabled: !!contentId,
+  })
 
   // Vytvoření Zod schématu podle polí
   const createSchema = (fields: Schema['content_types']['fields']) => {
-    const schemaFields = fields.reduce((acc, field) => ({
-      ...acc,
-      [field.name]: field.required
-        ? z.string().min(1, 'Toto pole je povinné')
-        : z.string().optional()
-    }), {});
+    const schemaFields = fields.reduce(
+      (acc, field) => ({
+        ...acc,
+        [field.name]: field.required
+          ? z.string().min(1, 'Toto pole je povinné')
+          : z.string().optional(),
+      }),
+      {}
+    )
 
-    return z.object(schemaFields);
-  };
+    return z.object(schemaFields)
+  }
 
-  const { register, handleSubmit, formState: { errors } } = useForm({
-    resolver: zodResolver(contentType ? createSchema(contentType.fields) : z.object({})),
-    defaultValues: existingContent?.data
-  });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(
+      contentType ? createSchema(contentType.fields) : z.object({})
+    ),
+    defaultValues: existingContent?.data,
+  })
 
   const mutation = useMutation({
     mutationFn: async (data: Record<string, any>) => {
       if (contentId) {
-        return directus.request(updateItems('content', [{
-          id: contentId,
-          data
-        }]));
+        return directus.request(
+          updateItems('content', [
+            {
+              id: contentId,
+              data,
+            },
+          ])
+        )
       } else {
-        return directus.request(createItems('content', [{
-          app_id: appId,
-          type_id: contentTypeId,
-          data,
-          status: 'draft'
-        }]));
+        return directus.request(
+          createItems('content', [
+            {
+              app_id: appId,
+              type_id: contentTypeId,
+              data,
+              status: 'draft',
+            },
+          ])
+        )
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['content'] });
-    }
-  });
+      queryClient.invalidateQueries({ queryKey: ['content'] })
+    },
+  })
 
-  if (!contentType) return <div>Načítám...</div>;
+  if (!contentType) return <div>Načítám...</div>
 
   return (
-    <form onSubmit={handleSubmit(data => mutation.mutate(data))} className="space-y-6">
+    <form
+      onSubmit={handleSubmit(data => mutation.mutate(data))}
+      className="space-y-6"
+    >
       {contentType.fields.map(field => (
         <div key={field.name} className="space-y-2">
           <label className="block text-sm font-medium text-gray-700">
@@ -121,19 +149,23 @@ export function ContentEditor({ appId, contentTypeId, contentId }: ContentEditor
       <div className="flex justify-end gap-3">
         <button
           type="button"
-          className="px-4 py-2 border rounded-md hover:bg-gray-50"
+          className="rounded-md border px-4 py-2 hover:bg-gray-50"
           onClick={() => window.history.back()}
         >
           Zrušit
         </button>
         <button
           type="submit"
-          className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+          className="rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
           disabled={mutation.isPending}
         >
-          {mutation.isPending ? 'Ukládám...' : contentId ? 'Uložit změny' : 'Vytvořit'}
+          {mutation.isPending
+            ? 'Ukládám...'
+            : contentId
+              ? 'Uložit změny'
+              : 'Vytvořit'}
         </button>
       </div>
     </form>
-  );
+  )
 }

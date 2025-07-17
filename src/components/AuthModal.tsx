@@ -4,7 +4,13 @@ import { signIn, signOut, useSession } from 'next-auth/react'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
-export default function AuthModal({ mode = 'login', onClose }: { mode?: 'login' | 'register', onClose?: () => void }) {
+export default function AuthModal({
+  mode = 'login',
+  onClose,
+}: {
+  mode?: 'login' | 'register'
+  onClose?: () => void
+}) {
   const { data: session, status } = useSession()
   const [currentMode, setCurrentMode] = useState<'login' | 'register'>(mode)
   const [formData, setFormData] = useState({
@@ -45,7 +51,10 @@ export default function AuthModal({ mode = 'login', onClose }: { mode?: 'login' 
           setMessage('Uživatel s tímto emailem již existuje.')
         } else {
           const errorData = await response.json()
-          setMessage(errorData.message || 'Nastala neočekávaná chyba, zkuste to prosím znovu.')
+          setMessage(
+            errorData.message ||
+              'Nastala neočekávaná chyba, zkuste to prosím znovu.'
+          )
         }
       } else {
         // Přihlášení
@@ -53,7 +62,7 @@ export default function AuthModal({ mode = 'login', onClose }: { mode?: 'login' 
           email: formData.email,
           password: formData.password,
           callbackUrl: '/',
-          redirect: false
+          redirect: false,
         })
 
         if (res?.error) {
@@ -93,10 +102,12 @@ export default function AuthModal({ mode = 'login', onClose }: { mode?: 'login' 
   if (session) {
     return (
       <div className="flex flex-col items-center gap-4">
-        <span className="text-copper">Jste přihlášen(a) jako {session.user?.name || session.user?.email}</span>
+        <span className="text-copper">
+          Jste přihlášen(a) jako {session.user?.name || session.user?.email}
+        </span>
         <button
           onClick={() => signOut()}
-          className="px-4 py-2 rounded-full shadow-lg border border-copper/40 hover:scale-105 transition-transform duration-200"
+          className="rounded-full border border-copper/40 px-4 py-2 shadow-lg transition-transform duration-200 hover:scale-105"
           style={{
             backgroundImage: "url('/images/wood.png')",
             backgroundSize: 'cover',
@@ -116,56 +127,62 @@ export default function AuthModal({ mode = 'login', onClose }: { mode?: 'login' 
 
   return (
     <div>
-      <h2 className="text-2xl font-display text-copper mb-6 text-center">
+      <h2 className="mb-6 text-center font-display text-2xl text-copper">
         {currentMode === 'register' ? 'Registrace' : 'Přihlášení'}
       </h2>
-      
+
       <form onSubmit={handleSubmit} className="space-y-4">
         {currentMode === 'register' && (
           <div>
-            <label htmlFor="name" className="block text-copper mb-2">Jméno</label>
+            <label htmlFor="name" className="mb-2 block text-copper">
+              Jméno
+            </label>
             <input
               type="text"
               id="name"
               name="name"
               value={formData.name}
               onChange={handleInputChange}
-              className="w-full px-4 py-2 rounded-lg border border-copper/40 focus:outline-none focus:border-copper"
+              className="w-full rounded-lg border border-copper/40 px-4 py-2 focus:border-copper focus:outline-none"
               required
             />
           </div>
         )}
-        
+
         <div>
-          <label htmlFor="email" className="block text-copper mb-2">Email</label>
+          <label htmlFor="email" className="mb-2 block text-copper">
+            Email
+          </label>
           <input
             type="email"
             id="email"
             name="email"
             value={formData.email}
             onChange={handleInputChange}
-            className="w-full px-4 py-2 rounded-lg border border-copper/40 focus:outline-none focus:border-copper"
+            className="w-full rounded-lg border border-copper/40 px-4 py-2 focus:border-copper focus:outline-none"
             required
           />
         </div>
-        
+
         <div>
-          <label htmlFor="password" className="block text-copper mb-2">Heslo</label>
+          <label htmlFor="password" className="mb-2 block text-copper">
+            Heslo
+          </label>
           <input
             type="password"
             id="password"
             name="password"
             value={formData.password}
             onChange={handleInputChange}
-            className="w-full px-4 py-2 rounded-lg border border-copper/40 focus:outline-none focus:border-copper"
+            className="w-full rounded-lg border border-copper/40 px-4 py-2 focus:border-copper focus:outline-none"
             required
           />
         </div>
-        
+
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full py-2 rounded-full shadow-lg border border-copper/40 hover:scale-105 transition-transform duration-200"
+          className="w-full rounded-full border border-copper/40 py-2 shadow-lg transition-transform duration-200 hover:scale-105"
           style={{
             backgroundImage: "url('/images/wood.png')",
             backgroundSize: 'cover',
@@ -177,52 +194,58 @@ export default function AuthModal({ mode = 'login', onClose }: { mode?: 'login' 
             borderColor: '#6b4f27',
           }}
         >
-          {isLoading 
-            ? (currentMode === 'register' ? 'Registruji...' : 'Přihlašuji...') 
-            : (currentMode === 'register' ? 'Registrovat' : 'Přihlásit se')
-          }
+          {isLoading
+            ? currentMode === 'register'
+              ? 'Registruji...'
+              : 'Přihlašuji...'
+            : currentMode === 'register'
+              ? 'Registrovat'
+              : 'Přihlásit se'}
         </button>
       </form>
-      
+
       {message && (
-        <div className={`mt-4 text-center ${isSuccess ? 'text-green-600' : 'text-red-600'}`}>
+        <div
+          className={`mt-4 text-center ${isSuccess ? 'text-green-600' : 'text-red-600'}`}
+        >
           {message}
         </div>
       )}
-      
+
       <div className="mt-4 text-center">
         <button
           type="button"
           onClick={switchMode}
-          className="text-copper hover:text-copper/80 underline"
+          className="text-copper underline hover:text-copper/80"
         >
-          {currentMode === 'login' 
-            ? 'Nemáte účet? Registrujte se' 
-            : 'Máte účet? Přihlaste se'
-          }
+          {currentMode === 'login'
+            ? 'Nemáte účet? Registrujte se'
+            : 'Máte účet? Přihlaste se'}
         </button>
       </div>
-      
+
       <div className="mt-6">
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-copper/40"></div>
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-white/90 text-copper">nebo pokračujte s</span>
+            <span className="bg-white/90 px-2 text-copper">
+              nebo pokračujte s
+            </span>
           </div>
         </div>
         <div className="mt-6 grid grid-cols-1 gap-3">
           <button
             type="button"
             onClick={handleGoogleSignIn}
-            className="w-full py-2 px-4 rounded-lg border border-copper/40 hover:bg-gray-50 flex items-center justify-center gap-2"
+            className="flex w-full items-center justify-center gap-2 rounded-lg border border-copper/40 px-4 py-2 hover:bg-gray-50"
           >
-            <img src="/images/google.svg" alt="Google" className="w-5 h-5" />
+            <img src="/images/google.svg" alt="Google" className="h-5 w-5" />
             Google
           </button>
         </div>
       </div>
     </div>
   )
-} 
+}

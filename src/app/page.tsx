@@ -34,7 +34,8 @@ export default function Home() {
   return (
     <div className="relative min-h-screen overflow-hidden">
       {/* Wood textura - na celé pozadí */}
-      <div className="absolute inset-0 z-0"
+      <div
+        className="absolute inset-0 z-0"
         style={{
           backgroundImage: "url('/images/wood-texture.webp')",
           backgroundRepeat: 'no-repeat',
@@ -43,74 +44,87 @@ export default function Home() {
         }}
       />
       {/* Overlay gradienty pro plynulé okraje */}
-      <div className="pointer-events-none select-none absolute inset-0 z-10"
+      <div
+        className="pointer-events-none absolute inset-0 z-10 select-none"
         style={{
-          background: 'linear-gradient(90deg, #2d1c0a 0%, transparent 10%, transparent 90%, #2d1c0a 100%)',
+          background:
+            'linear-gradient(90deg, #2d1c0a 0%, transparent 10%, transparent 90%, #2d1c0a 100%)',
           opacity: 0.18,
         }}
       />
-      <div className="pointer-events-none select-none absolute inset-0 z-10"
+      <div
+        className="pointer-events-none absolute inset-0 z-10 select-none"
         style={{
-          background: 'linear-gradient(180deg, #2d1c0a 0%, transparent 12%, transparent 88%, #2d1c0a 100%)',
+          background:
+            'linear-gradient(180deg, #2d1c0a 0%, transparent 12%, transparent 88%, #2d1c0a 100%)',
           opacity: 0.08,
         }}
       />
       {/* Tmavý sloupec uprostřed s gradientovými okraji */}
-      <div className="pointer-events-none select-none absolute top-0 left-1/2 z-20 h-full"
+      <div
+        className="pointer-events-none absolute left-1/2 top-0 z-20 h-full select-none"
         style={{
           width: '33vw',
           transform: 'translateX(-50%)',
-          background: 'linear-gradient(90deg, transparent 0%, #181818 18%, #181818 82%, transparent 100%)',
+          background:
+            'linear-gradient(90deg, transparent 0%, #181818 18%, #181818 82%, transparent 100%)',
           opacity: 0.92,
         }}
       />
 
       {/* Blueprint výkresy na různých místech - zvýrazněné */}
-      <div className="pointer-events-none select-none absolute top-0 right-0 w-96 h-96 z-30"
+      <div
+        className="pointer-events-none absolute right-0 top-0 z-30 h-96 w-96 select-none"
         style={{
           maskImage: 'linear-gradient(to left, transparent 10%, black 60%)',
-          WebkitMaskImage: 'linear-gradient(to left, transparent 10%, black 60%)',
+          WebkitMaskImage:
+            'linear-gradient(to left, transparent 10%, black 60%)',
           opacity: 0.48,
           filter: 'drop-shadow(0 0 16px #ffb347) brightness(1.2) sepia(0.2)',
-          transform: 'rotate(12deg)'
+          transform: 'rotate(12deg)',
         }}
       >
-        <div className="w-full h-full bg-blueprint bg-contain bg-no-repeat bg-right-top" />
+        <div className="h-full w-full bg-blueprint bg-contain bg-right-top bg-no-repeat" />
       </div>
-      <div className="pointer-events-none select-none absolute bottom-0 left-0 w-80 h-80 z-30"
+      <div
+        className="pointer-events-none absolute bottom-0 left-0 z-30 h-80 w-80 select-none"
         style={{
           maskImage: 'linear-gradient(to top, transparent 10%, black 60%)',
-          WebkitMaskImage: 'linear-gradient(to top, transparent 10%, black 60%)',
+          WebkitMaskImage:
+            'linear-gradient(to top, transparent 10%, black 60%)',
           opacity: 0.38,
           filter: 'drop-shadow(0 0 12px #ffb347) brightness(1.2) sepia(0.2)',
-          transform: 'rotate(-18deg)'
+          transform: 'rotate(-18deg)',
         }}
       >
-        <div className="w-full h-full bg-blueprint bg-contain bg-no-repeat bg-left-bottom" />
+        <div className="h-full w-full bg-blueprint bg-contain bg-left-bottom bg-no-repeat" />
       </div>
-      <div className="pointer-events-none select-none absolute top-1/2 left-1/2 w-[500px] h-40 z-30"
+      <div
+        className="pointer-events-none absolute left-1/2 top-1/2 z-30 h-40 w-[500px] select-none"
         style={{
-          maskImage: 'linear-gradient(to right, transparent 0%, black 40%, black 60%, transparent 100%)',
-          WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 40%, black 60%, transparent 100%)',
+          maskImage:
+            'linear-gradient(to right, transparent 0%, black 40%, black 60%, transparent 100%)',
+          WebkitMaskImage:
+            'linear-gradient(to right, transparent 0%, black 40%, black 60%, transparent 100%)',
           opacity: 0.32,
           filter: 'drop-shadow(0 0 18px #ffb347) brightness(1.2) sepia(0.2)',
-          transform: 'translate(-50%,-50%) rotate(-7deg)'
+          transform: 'translate(-50%,-50%) rotate(-7deg)',
         }}
       >
-        <div className="w-full h-full bg-blueprint bg-contain bg-no-repeat bg-center" />
+        <div className="h-full w-full bg-blueprint bg-contain bg-center bg-no-repeat" />
       </div>
 
       {/* PRAVÝ HORNÍ ROH: dvě menší dřevěná tlačítka */}
-      <div className="fixed top-8 right-8 z-50 flex gap-3">
+      <div className="fixed right-8 top-8 z-50 flex gap-3">
         {session ? (
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <User className="w-6 h-6" />
+              <User className="h-6 w-6" />
               <span>{session.user?.name || session.user?.email}</span>
             </div>
             <button
               onClick={() => signOut()}
-              className="px-4 py-2 rounded-full font-display text-base shadow-lg border hover:scale-105 transition-transform duration-200"
+              className="rounded-full border px-4 py-2 font-display text-base shadow-lg transition-transform duration-200 hover:scale-105"
               style={{
                 backgroundImage: "url('/images/wood.png')",
                 backgroundSize: 'cover',
@@ -129,7 +143,7 @@ export default function Home() {
           <div className="flex gap-4">
             <button
               onClick={() => setShowAuth('register')}
-              className="px-4 py-2 rounded-full font-display text-base shadow-lg border hover:scale-105 transition-transform duration-200"
+              className="rounded-full border px-4 py-2 font-display text-base shadow-lg transition-transform duration-200 hover:scale-105"
               style={{
                 backgroundImage: "url('/images/wood.png')",
                 backgroundSize: 'cover',
@@ -145,7 +159,7 @@ export default function Home() {
             </button>
             <button
               onClick={() => setShowAuth('login')}
-              className="px-4 py-2 rounded-full font-display text-base shadow-lg border hover:scale-105 transition-transform duration-200"
+              className="rounded-full border px-4 py-2 font-display text-base shadow-lg transition-transform duration-200 hover:scale-105"
               style={{
                 backgroundImage: "url('/images/wood.png')",
                 backgroundSize: 'cover',
@@ -163,23 +177,24 @@ export default function Home() {
         )}
       </div>
 
-      <div className="container mx-auto px-4 py-12 relative z-40">
-        <div className="max-w-4xl mx-auto">
+      <div className="container relative z-40 mx-auto px-4 py-12">
+        <div className="mx-auto max-w-4xl">
           {/* Chybová zpráva */}
           {errorMessage && (
-            <div className="mb-8 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+            <div className="mb-8 rounded-lg border border-red-400 bg-red-100 p-4 text-red-700">
               <p className="text-center">{errorMessage}</p>
-              <button 
+              <button
                 onClick={() => setErrorMessage(null)}
-                className="absolute top-2 right-2 text-red-500 hover:text-red-700"
+                className="absolute right-2 top-2 text-red-500 hover:text-red-700"
               >
                 ✕
               </button>
             </div>
           )}
-          
-          <div className="text-center mb-12">
-            <h1 className="font-display text-6xl mb-4"
+
+          <div className="mb-12 text-center">
+            <h1
+              className="mb-4 font-display text-6xl"
               style={{
                 color: '#fff8e1',
                 textShadow: '0 2px 16px #ffb347, 0 1px 0 #181818',
@@ -188,29 +203,29 @@ export default function Home() {
             >
               AppDílna
             </h1>
-            <p className="text-xl text-copper font-display italic">
+            <p className="font-display text-xl italic text-copper">
               Digitální laboratoř pro tvorbu PWA aplikací
             </p>
           </div>
 
           {/* Dekorativní oddělovač */}
-          <div className="flex items-center justify-center mb-12">
-            <div className="h-px bg-copper w-32" />
+          <div className="mb-12 flex items-center justify-center">
+            <div className="h-px w-32 bg-copper" />
             <div className="mx-4 text-copper">⚡</div>
-            <div className="h-px bg-copper w-32" />
+            <div className="h-px w-32 bg-copper" />
           </div>
 
           {/* Hlavní text */}
-          <div className="bg-parchment/80 p-8 rounded-lg shadow-lg border border-copper/20 mb-12">
-            <p className="text-lg text-ink mb-6">
-              Vítejte v naší digitální dílně, kde se z vašich nápadů stávají skutečné aplikace.
-              S našimi nástroji a šablonami můžete vytvořit profesionální PWA aplikaci
-              bez nutnosti psát jediný řádek kódu.
+          <div className="mb-12 rounded-lg border border-copper/20 bg-parchment/80 p-8 shadow-lg">
+            <p className="mb-6 text-lg text-ink">
+              Vítejte v naší digitální dílně, kde se z vašich nápadů stávají
+              skutečné aplikace. S našimi nástroji a šablonami můžete vytvořit
+              profesionální PWA aplikaci bez nutnosti psát jediný řádek kódu.
             </p>
             <div className="flex flex-col items-center justify-center">
               <button
                 onClick={handleEnterWorkshop}
-                className="px-10 py-6 rounded-lg font-display text-2xl shadow-lg border hover:scale-105 transition-transform duration-200"
+                className="rounded-lg border px-10 py-6 font-display text-2xl shadow-lg transition-transform duration-200 hover:scale-105"
                 style={{
                   backgroundImage: "url('/images/wood.png')",
                   backgroundSize: 'cover',
@@ -229,18 +244,28 @@ export default function Home() {
 
           {/* Dekorativní prvky */}
           <div className="grid grid-cols-3 gap-8 text-center">
-            <a href="/pwa" className="p-4 border border-copper/20 rounded-lg cursor-pointer hover:bg-copper/10 transition-colors block">
-              <div className="text-3xl mb-2">📖</div>
-              <h3 className="font-display text-copper mb-2 underline">Co je to Powerful Web App a jaké jsou její výhody?</h3>
+            <a
+              href="/pwa"
+              className="block cursor-pointer rounded-lg border border-copper/20 p-4 transition-colors hover:bg-copper/10"
+            >
+              <div className="mb-2 text-3xl">📖</div>
+              <h3 className="mb-2 font-display text-copper underline">
+                Co je to Powerful Web App a jaké jsou její výhody?
+              </h3>
             </a>
-            <div className="p-4 border border-copper/20 rounded-lg">
-              <div className="text-3xl mb-2">📐</div>
-              <h3 className="font-display text-copper mb-2">Šablony</h3>
+            <div className="rounded-lg border border-copper/20 p-4">
+              <div className="mb-2 text-3xl">📐</div>
+              <h3 className="mb-2 font-display text-copper">Šablony</h3>
               <p className="text-ink/80">Připravené šablony pro rychlý start</p>
             </div>
-            <a href="/nasazeni" className="p-4 border border-copper/20 rounded-lg cursor-pointer hover:bg-copper/10 transition-colors block">
-              <div className="text-3xl mb-2">🚀</div>
-              <h3 className="font-display text-copper mb-2 underline">Jak na nasazení aplikace</h3>
+            <a
+              href="/nasazeni"
+              className="block cursor-pointer rounded-lg border border-copper/20 p-4 transition-colors hover:bg-copper/10"
+            >
+              <div className="mb-2 text-3xl">🚀</div>
+              <h3 className="mb-2 font-display text-copper underline">
+                Jak na nasazení aplikace
+              </h3>
             </a>
           </div>
         </div>
@@ -249,12 +274,23 @@ export default function Home() {
       {/* Modální okno pro přihlášení/registraci */}
       {showAuth && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-white/90 p-8 rounded-3xl max-w-md w-full mx-4 relative" style={{ backdropFilter: 'blur(8px)', boxShadow: '0 0 0 0 #fff0, 0 0 120px 48px #f5f1e6cc' }}>
-            <button onClick={() => setShowAuth(null)} className="absolute top-4 right-4 text-copper hover:text-copper/80">✕</button>
+          <div
+            className="relative mx-4 w-full max-w-md rounded-3xl bg-white/90 p-8"
+            style={{
+              backdropFilter: 'blur(8px)',
+              boxShadow: '0 0 0 0 #fff0, 0 0 120px 48px #f5f1e6cc',
+            }}
+          >
+            <button
+              onClick={() => setShowAuth(null)}
+              className="absolute right-4 top-4 text-copper hover:text-copper/80"
+            >
+              ✕
+            </button>
             <AuthModal mode={showAuth} onClose={() => setShowAuth(null)} />
           </div>
         </div>
       )}
     </div>
   )
-} 
+}

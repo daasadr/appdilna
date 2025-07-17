@@ -1,13 +1,13 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { ComponentCategory, ComponentTemplate } from '@/types/builder';
-import { 
-  Layout, 
-  Type, 
-  Image, 
-  MousePointer, 
-  Mail, 
+import { useState } from 'react'
+import { ComponentCategory, ComponentTemplate } from '@/types/builder'
+import {
+  Layout,
+  Type,
+  Image,
+  MousePointer,
+  Mail,
   Image as ImageIcon,
   MessageSquare,
   CreditCard,
@@ -26,11 +26,11 @@ import {
   Calendar,
   Search,
   LogIn,
-  UserPlus
-} from 'lucide-react';
+  UserPlus,
+} from 'lucide-react'
 
 interface ComponentLibraryProps {
-  onComponentDrop: (componentType: string, position: number) => void;
+  onComponentDrop: (componentType: string, position: number) => void
 }
 
 export const componentCategories: ComponentCategory[] = [
@@ -50,14 +50,14 @@ export const componentCategories: ComponentCategory[] = [
           subtitle: 'Vytvořte si úžasnou webovou aplikaci',
           buttonText: 'Začít',
           buttonLink: '#',
-          backgroundImage: '/hero-bg.jpg'
+          backgroundImage: '/hero-bg.jpg',
         },
         defaultStyle: {
           textAlign: 'center',
-          padding: '80px 20px'
+          padding: '80px 20px',
         },
         preview: '/previews/hero.png',
-        tags: ['úvod', 'hlavní', 'nadpis']
+        tags: ['úvod', 'hlavní', 'nadpis'],
       },
       {
         id: 'navigation',
@@ -70,15 +70,15 @@ export const componentCategories: ComponentCategory[] = [
           links: [
             { text: 'Domů', href: '/' },
             { text: 'O nás', href: '/o-nas' },
-            { text: 'Kontakt', href: '/kontakt' }
-          ]
+            { text: 'Kontakt', href: '/kontakt' },
+          ],
         },
         defaultStyle: {
           backgroundColor: '#ffffff',
-          padding: '1rem'
+          padding: '1rem',
         },
         preview: '/previews/navigation.png',
-        tags: ['menu', 'navigace', 'logo']
+        tags: ['menu', 'navigace', 'logo'],
       },
       {
         id: 'footer',
@@ -99,16 +99,16 @@ export const componentCategories: ComponentCategory[] = [
           showContact: false,
           showNewsletter: false,
           newsletterText: '',
-          newsletterPlaceholder: ''
+          newsletterPlaceholder: '',
         },
         defaultStyle: {
           backgroundColor: '#f8f9fa',
-          padding: '2rem 0'
+          padding: '2rem 0',
         },
         preview: '/previews/footer.png',
-        tags: ['patička', 'copyright', 'odkazy']
-      }
-    ]
+        tags: ['patička', 'copyright', 'odkazy'],
+      },
+    ],
   },
   {
     id: 'content',
@@ -124,14 +124,14 @@ export const componentCategories: ComponentCategory[] = [
         defaultProps: {
           content: 'Zde napište svůj text...',
           heading: 'Nadpis',
-          alignment: 'left'
+          alignment: 'left',
         },
         defaultStyle: {
           fontSize: '16px',
-          lineHeight: '1.6'
+          lineHeight: '1.6',
         },
         preview: '/previews/text.png',
-        tags: ['text', 'obsah', 'formátování']
+        tags: ['text', 'obsah', 'formátování'],
       },
       {
         id: 'image',
@@ -142,14 +142,14 @@ export const componentCategories: ComponentCategory[] = [
         defaultProps: {
           src: '/placeholder.jpg',
           alt: 'Popis obrázku',
-          caption: ''
+          caption: '',
         },
         defaultStyle: {
           maxWidth: '100%',
-          borderRadius: '8px'
+          borderRadius: '8px',
         },
         preview: '/previews/image.png',
-        tags: ['obrázek', 'fotografie', 'media']
+        tags: ['obrázek', 'fotografie', 'media'],
       },
       {
         id: 'video',
@@ -160,16 +160,16 @@ export const componentCategories: ComponentCategory[] = [
         defaultProps: {
           url: '',
           title: 'Video',
-          autoplay: false
+          autoplay: false,
         },
         defaultStyle: {
           width: '100%',
-          aspectRatio: '16/9'
+          aspectRatio: '16/9',
         },
         preview: '/previews/video.png',
-        tags: ['video', 'youtube', 'media']
-      }
-    ]
+        tags: ['video', 'youtube', 'media'],
+      },
+    ],
   },
   {
     id: 'interactive',
@@ -186,15 +186,15 @@ export const componentCategories: ComponentCategory[] = [
           text: 'Klikněte zde',
           variant: 'primary',
           size: 'medium',
-          link: '#'
+          link: '#',
         },
         defaultStyle: {
           padding: '12px 24px',
           borderRadius: '6px',
-          cursor: 'pointer'
+          cursor: 'pointer',
         },
         preview: '/previews/button.png',
-        tags: ['tlačítko', 'akce', 'link']
+        tags: ['tlačítko', 'akce', 'link'],
       },
       {
         id: 'form',
@@ -205,14 +205,14 @@ export const componentCategories: ComponentCategory[] = [
         defaultProps: {
           title: 'Kontaktujte nás',
           fields: ['name', 'email', 'message'],
-          submitText: 'Odeslat'
+          submitText: 'Odeslat',
         },
         defaultStyle: {
           maxWidth: '500px',
-          margin: '0 auto'
+          margin: '0 auto',
         },
         preview: '/previews/form.png',
-        tags: ['formulář', 'kontakt', 'odeslání']
+        tags: ['formulář', 'kontakt', 'odeslání'],
       },
       {
         id: 'search',
@@ -222,16 +222,16 @@ export const componentCategories: ComponentCategory[] = [
         description: 'Vyhledávací pole s výsledky',
         defaultProps: {
           placeholder: 'Hledat...',
-          results: []
+          results: [],
         },
         defaultStyle: {
           width: '100%',
-          maxWidth: '400px'
+          maxWidth: '400px',
         },
         preview: '/previews/search.png',
-        tags: ['vyhledávání', 'hledat', 'filtry']
-      }
-    ]
+        tags: ['vyhledávání', 'hledat', 'filtry'],
+      },
+    ],
   },
   {
     id: 'business',
@@ -248,14 +248,14 @@ export const componentCategories: ComponentCategory[] = [
           text: 'Skvělá služba! Doporučuji všem.',
           author: 'Jan Novák',
           company: 'Společnost s.r.o.',
-          rating: 5
+          rating: 5,
         },
         defaultStyle: {
           textAlign: 'center',
-          padding: '2rem'
+          padding: '2rem',
         },
         preview: '/previews/testimonial.png',
-        tags: ['reference', 'hodnocení', 'zákazník']
+        tags: ['reference', 'hodnocení', 'zákazník'],
       },
       {
         id: 'pricing',
@@ -269,16 +269,16 @@ export const componentCategories: ComponentCategory[] = [
               name: 'Základní',
               price: '299 Kč',
               features: ['Funkce 1', 'Funkce 2'],
-              popular: false
-            }
-          ]
+              popular: false,
+            },
+          ],
         },
         defaultStyle: {
           display: 'grid',
-          gap: '1rem'
+          gap: '1rem',
         },
         preview: '/previews/pricing.png',
-        tags: ['ceník', 'ceny', 'plány']
+        tags: ['ceník', 'ceny', 'plány'],
       },
       {
         id: 'team',
@@ -292,65 +292,85 @@ export const componentCategories: ComponentCategory[] = [
               name: 'Jan Novák',
               position: 'CEO',
               photo: '/team/jan.jpg',
-              bio: 'Zakladatel společnosti'
-            }
-          ]
+              bio: 'Zakladatel společnosti',
+            },
+          ],
         },
         defaultStyle: {
           display: 'grid',
-          gap: '2rem'
+          gap: '2rem',
         },
         preview: '/previews/team.png',
-        tags: ['tým', 'lidé', 'představení']
-      }
-    ]
-  }
-];
+        tags: ['tým', 'lidé', 'představení'],
+      },
+    ],
+  },
+]
 
 const getIconComponent = (iconName: string) => {
   const icons: Record<string, any> = {
-    Layout, Type, Image, MousePointer, Mail, ImageIcon, MessageSquare,
-    CreditCard, Navigation, Phone, Users, FileText, Settings, Globe,
-    MapPin, Play, Music, Grid, List, BarChart3, Calendar, Search,
-    LogIn, UserPlus
-  };
-  return icons[iconName] || Layout;
-};
+    Layout,
+    Type,
+    Image,
+    MousePointer,
+    Mail,
+    ImageIcon,
+    MessageSquare,
+    CreditCard,
+    Navigation,
+    Phone,
+    Users,
+    FileText,
+    Settings,
+    Globe,
+    MapPin,
+    Play,
+    Music,
+    Grid,
+    List,
+    BarChart3,
+    Calendar,
+    Search,
+    LogIn,
+    UserPlus,
+  }
+  return icons[iconName] || Layout
+}
 
 export function ComponentLibrary({ onComponentDrop }: ComponentLibraryProps) {
-  const [activeCategory, setActiveCategory] = useState('layout');
+  const [activeCategory, setActiveCategory] = useState('layout')
 
   const handleComponentClick = (component: ComponentTemplate) => {
     // Přidáme komponentu na konec stránky
-    onComponentDrop(component.id, 999); // Velké číslo pro přidání na konec
-  };
+    onComponentDrop(component.id, 999) // Velké číslo pro přidání na konec
+  }
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="flex h-full flex-col">
       {/* Header */}
-      <div className="p-4 border-b border-gray-200">
+      <div className="border-b border-gray-200 p-4">
         <h2 className="text-lg font-semibold text-gray-800">Komponenty</h2>
         <p className="text-sm text-gray-600">Klikněte pro přidání komponenty</p>
       </div>
 
       {/* Category Tabs */}
       <div className="flex border-b border-gray-200">
-        {componentCategories.map((category) => {
-          const IconComponent = getIconComponent(category.icon);
+        {componentCategories.map(category => {
+          const IconComponent = getIconComponent(category.icon)
           return (
             <button
               key={category.id}
               onClick={() => setActiveCategory(category.id)}
-              className={`flex-1 flex items-center justify-center p-3 text-sm font-medium transition-colors ${
+              className={`flex flex-1 items-center justify-center p-3 text-sm font-medium transition-colors ${
                 activeCategory === category.id
-                  ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
-                  : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
+                  ? 'border-b-2 border-blue-600 bg-blue-50 text-blue-600'
+                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-800'
               }`}
             >
-              <IconComponent className="w-4 h-4 mr-2" />
+              <IconComponent className="mr-2 h-4 w-4" />
               {category.name}
             </button>
-          );
+          )
         })}
       </div>
 
@@ -359,32 +379,32 @@ export function ComponentLibrary({ onComponentDrop }: ComponentLibraryProps) {
         <div className="space-y-3">
           {componentCategories
             .find(cat => cat.id === activeCategory)
-            ?.components.map((component) => {
-              const IconComponent = getIconComponent(component.icon);
+            ?.components.map(component => {
+              const IconComponent = getIconComponent(component.icon)
               return (
                 <div
                   key={component.id}
                   onClick={() => handleComponentClick(component)}
-                  className="p-3 bg-white border border-gray-200 rounded-lg cursor-pointer transition-all hover:shadow-md hover:border-blue-300 hover:bg-blue-50"
+                  className="cursor-pointer rounded-lg border border-gray-200 bg-white p-3 transition-all hover:border-blue-300 hover:bg-blue-50 hover:shadow-md"
                 >
                   <div className="flex items-center space-x-3">
                     <div className="flex-shrink-0">
-                      <IconComponent className="w-5 h-5 text-gray-600" />
+                      <IconComponent className="h-5 w-5 text-gray-600" />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-sm font-medium text-gray-800 truncate">
+                    <div className="min-w-0 flex-1">
+                      <h3 className="truncate text-sm font-medium text-gray-800">
                         {component.name}
                       </h3>
-                      <p className="text-xs text-gray-500 truncate">
+                      <p className="truncate text-xs text-gray-500">
                         {component.description}
                       </p>
                     </div>
                   </div>
                 </div>
-              );
+              )
             })}
         </div>
       </div>
     </div>
-  );
-} 
+  )
+}

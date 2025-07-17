@@ -1,12 +1,16 @@
-'use client';
+'use client'
 
 interface TextComponentProps {
-  props: Record<string, any>;
-  style: Record<string, any>;
-  isPreviewMode: boolean;
+  props: Record<string, any>
+  style: Record<string, any>
+  isPreviewMode: boolean
 }
 
-export function TextComponent({ props, style, isPreviewMode }: TextComponentProps) {
+export function TextComponent({
+  props,
+  style,
+  isPreviewMode,
+}: TextComponentProps) {
   const {
     content,
     heading,
@@ -21,58 +25,59 @@ export function TextComponent({ props, style, isPreviewMode }: TextComponentProp
     maxWidth = 'none',
     textTransform = 'none',
     fontStyle = 'normal',
-    textDecoration = 'none'
-  } = props;
+    textDecoration = 'none',
+  } = props
 
   // Explicitní kontrola pro zobrazení textu - prázdný string se zobrazí jako prázdno
-  const displayContent = content === undefined ? 'Zde napište svůj text...' : content;
-  const displayHeading = heading === undefined ? '' : heading;
+  const displayContent =
+    content === undefined ? 'Zde napište svůj text...' : content
+  const displayHeading = heading === undefined ? '' : heading
 
   const getAlignmentClass = () => {
     switch (alignment) {
       case 'center':
-        return 'text-center';
+        return 'text-center'
       case 'right':
-        return 'text-right';
+        return 'text-right'
       case 'justify':
-        return 'text-justify';
+        return 'text-justify'
       default:
-        return 'text-left';
+        return 'text-left'
     }
-  };
+  }
 
   const getTextTransformClass = () => {
     switch (textTransform) {
       case 'uppercase':
-        return 'uppercase';
+        return 'uppercase'
       case 'lowercase':
-        return 'lowercase';
+        return 'lowercase'
       case 'capitalize':
-        return 'capitalize';
+        return 'capitalize'
       default:
-        return '';
+        return ''
     }
-  };
+  }
 
   const getFontStyleClass = () => {
     switch (fontStyle) {
       case 'italic':
-        return 'italic';
+        return 'italic'
       default:
-        return 'not-italic';
+        return 'not-italic'
     }
-  };
+  }
 
   const getTextDecorationClass = () => {
     switch (textDecoration) {
       case 'underline':
-        return 'underline';
+        return 'underline'
       case 'line-through':
-        return 'line-through';
+        return 'line-through'
       default:
-        return 'no-underline';
+        return 'no-underline'
     }
-  };
+  }
 
   return (
     <div
@@ -86,19 +91,17 @@ export function TextComponent({ props, style, isPreviewMode }: TextComponentProp
         backgroundColor,
         padding,
         margin,
-        maxWidth: maxWidth === 'none' ? 'none' : maxWidth
+        maxWidth: maxWidth === 'none' ? 'none' : maxWidth,
       }}
     >
       {displayHeading && (
-        <h2 className="text-2xl font-bold mb-4">
-          {displayHeading}
-        </h2>
+        <h2 className="mb-4 text-2xl font-bold">{displayHeading}</h2>
       )}
-      
-      <div 
+
+      <div
         className="prose prose-lg max-w-none"
         dangerouslySetInnerHTML={{ __html: displayContent }}
       />
     </div>
-  );
-} 
+  )
+}

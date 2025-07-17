@@ -1,6 +1,8 @@
 import { GoogleSignInButtonProps } from './types'
 
-export default function GoogleSignInButton({ onSignIn }: GoogleSignInButtonProps) {
+export default function GoogleSignInButton({
+  onSignIn,
+}: GoogleSignInButtonProps) {
   return (
     <div className="mt-6">
       <div className="relative">
@@ -8,16 +10,18 @@ export default function GoogleSignInButton({ onSignIn }: GoogleSignInButtonProps
           <div className="w-full border-t border-copper/40"></div>
         </div>
         <div className="relative flex justify-center text-sm">
-          <span className="px-2 bg-white/90 text-copper">nebo pokračujte s</span>
+          <span className="bg-white/90 px-2 text-copper">
+            nebo pokračujte s
+          </span>
         </div>
       </div>
       <div className="mt-6 grid grid-cols-1 gap-3">
         <button
           type="button"
           onClick={onSignIn}
-          className="w-full py-2 px-4 rounded-lg border border-copper/40 hover:bg-gray-50 flex items-center justify-center gap-2"
+          className="flex w-full items-center justify-center gap-2 rounded-lg border border-copper/40 px-4 py-2 hover:bg-gray-50"
         >
-          <img src="/images/google.svg" alt="Google" className="w-5 h-5" />
+          <img src="/images/google.svg" alt="Google" className="h-5 w-5" />
           Google
         </button>
       </div>

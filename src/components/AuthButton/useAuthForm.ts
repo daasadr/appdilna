@@ -3,8 +3,13 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { AuthFormData } from './types'
 
-export const useAuthForm = (initialMode: 'login' | 'register', onClose?: () => void) => {
-  const [currentMode, setCurrentMode] = useState<'login' | 'register'>(initialMode)
+export const useAuthForm = (
+  initialMode: 'login' | 'register',
+  onClose?: () => void
+) => {
+  const [currentMode, setCurrentMode] = useState<'login' | 'register'>(
+    initialMode
+  )
   const [formData, setFormData] = useState<AuthFormData>({
     name: '',
     email: '',
@@ -60,7 +65,10 @@ export const useAuthForm = (initialMode: 'login' | 'register', onClose?: () => v
       setMessage('Uživatel s tímto emailem již existuje.')
     } else {
       const errorData = await response.json()
-      setMessage(errorData.message || 'Nastala neočekávaná chyba, zkuste to prosím znovu.')
+      setMessage(
+        errorData.message ||
+          'Nastala neočekávaná chyba, zkuste to prosím znovu.'
+      )
     }
   }
 
@@ -69,7 +77,7 @@ export const useAuthForm = (initialMode: 'login' | 'register', onClose?: () => v
       email: formData.email,
       password: formData.password,
       callbackUrl: '/dashboard',
-      redirect: false
+      redirect: false,
     })
 
     if (res?.error) {

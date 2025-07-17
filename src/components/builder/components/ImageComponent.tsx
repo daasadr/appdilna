@@ -1,12 +1,16 @@
-'use client';
+'use client'
 
 interface ImageComponentProps {
-  props: Record<string, any>;
-  style: Record<string, any>;
-  isPreviewMode: boolean;
+  props: Record<string, any>
+  style: Record<string, any>
+  isPreviewMode: boolean
 }
 
-export function ImageComponent({ props, style, isPreviewMode }: ImageComponentProps) {
+export function ImageComponent({
+  props,
+  style,
+  isPreviewMode,
+}: ImageComponentProps) {
   const {
     src = '/placeholder.jpg',
     alt,
@@ -15,27 +19,27 @@ export function ImageComponent({ props, style, isPreviewMode }: ImageComponentPr
     height = 'auto',
     borderRadius = '8px',
     objectFit = 'cover',
-    shadow = 'none'
-  } = props;
+    shadow = 'none',
+  } = props
 
   // Explicitní kontrola pro zobrazení textu - prázdný string se zobrazí jako prázdno
-  const displayAlt = alt === undefined ? 'Obrázek' : alt;
-  const displayCaption = caption === undefined ? '' : caption;
+  const displayAlt = alt === undefined ? 'Obrázek' : alt
+  const displayCaption = caption === undefined ? '' : caption
 
   const getShadowClass = () => {
     switch (shadow) {
       case 'small':
-        return 'shadow-sm';
+        return 'shadow-sm'
       case 'medium':
-        return 'shadow-md';
+        return 'shadow-md'
       case 'large':
-        return 'shadow-lg';
+        return 'shadow-lg'
       case 'xl':
-        return 'shadow-xl';
+        return 'shadow-xl'
       default:
-        return '';
+        return ''
     }
-  };
+  }
 
   return (
     <div className="text-center" style={style}>
@@ -49,28 +53,26 @@ export function ImageComponent({ props, style, isPreviewMode }: ImageComponentPr
             height,
             borderRadius,
             objectFit,
-            maxWidth: '100%'
+            maxWidth: '100%',
           }}
-          onError={(e) => {
-            const target = e.target as HTMLImageElement;
-            target.src = '/placeholder.jpg';
+          onError={e => {
+            const target = e.target as HTMLImageElement
+            target.src = '/placeholder.jpg'
           }}
         />
-        
+
         {!isPreviewMode && (
-          <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
-            <div className="opacity-0 hover:opacity-100 transition-opacity text-white text-sm font-medium">
+          <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 transition-all duration-300 hover:bg-opacity-20">
+            <div className="text-sm font-medium text-white opacity-0 transition-opacity hover:opacity-100">
               Klikněte pro úpravu
             </div>
           </div>
         )}
       </div>
-      
+
       {displayCaption && (
-        <p className="mt-2 text-sm text-gray-600 italic">
-          {displayCaption}
-        </p>
+        <p className="mt-2 text-sm italic text-gray-600">{displayCaption}</p>
       )}
     </div>
-  );
-} 
+  )
+}

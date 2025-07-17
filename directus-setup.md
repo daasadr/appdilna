@@ -5,6 +5,7 @@
 Kolekce `apps` by měla obsahovat následující pole:
 
 ### Základní pole:
+
 - `id` (UUID, Primary Key)
 - `name` (String, Required) - název aplikace
 - `slug` (String, Required) - URL slug
@@ -12,11 +13,13 @@ Kolekce `apps` by měla obsahovat následující pole:
 - `user_owner` (UUID, Many-to-One s users) - vlastník aplikace
 
 ### Builder pole:
+
 - `pages` (JSON) - pole stránek s komponentami
 - `settings` (JSON) - nastavení aplikace
 - `theme` (JSON) - téma aplikace
 
 ### Volitelná pole:
+
 - `app_title` (String) - titulek aplikace
 - `welcome_message` (String) - uvítací zpráva
 - `createdAt` (DateTime)
@@ -27,37 +30,45 @@ Kolekce `apps` by měla obsahovat následující pole:
 ### Pro roli "Registered" (běžní uživatelé):
 
 **Čtení (Read):**
+
 - Filter: `{ "user_owner": { "_eq": "$CURRENT_USER" } }`
 - Fields: všechny pole
 
 **Vytvoření (Create):**
+
 - Fields: `name`, `slug`, `status`, `user_owner`, `pages`, `settings`, `theme`, `app_title`, `welcome_message`
 
 **Aktualizace (Update):**
+
 - Filter: `{ "user_owner": { "_eq": "$CURRENT_USER" } }`
 - Fields: všechny pole kromě `id`
 
 **Mazání (Delete):**
+
 - Filter: `{ "user_owner": { "_eq": "$CURRENT_USER" } }`
 
 ## 3. Nastavení v Directus Admin Panelu
 
 ### Krok 1: Otevřete Directus Admin Panel
+
 1. Jděte na `https://dir.appdilna.cz/admin`
 2. Přihlaste se s admin účtem
 
 ### Krok 2: Ověřte kolekci `apps`
+
 1. Jděte do **Settings > Data Model**
 2. Najděte kolekci `apps`
 3. Ověřte, že obsahuje všechna potřebná pole
 
 ### Krok 3: Nastavte oprávnění
+
 1. Jděte do **Settings > Roles & Permissions**
 2. Vyberte roli "Registered"
 3. Najděte kolekci `apps`
 4. Nastavte oprávnění podle výše uvedeného
 
 ### Krok 4: Test oprávnění
+
 1. Vytvořte test uživatele s rolí "Registered"
 2. Přihlaste se s tímto uživatelem
 3. Ověřte, že může vytvářet a upravovat aplikace
@@ -65,6 +76,7 @@ Kolekce `apps` by měla obsahovat následující pole:
 ## 4. Struktura JSON polí
 
 ### `pages` pole:
+
 ```json
 [
   {
@@ -94,6 +106,7 @@ Kolekce `apps` by měla obsahovat následující pole:
 ```
 
 ### `settings` pole:
+
 ```json
 {
   "seo": {
@@ -109,6 +122,7 @@ Kolekce `apps` by měla obsahovat následující pole:
 ```
 
 ### `theme` pole:
+
 ```json
 {
   "colors": {
@@ -140,13 +154,16 @@ Po nastavení můžete otestovat builder:
 ## 6. Řešení problémů
 
 ### Problém: "Forbidden" při načítání aplikace
+
 - Zkontrolujte, že `user_owner` pole je správně nastaveno
 - Ověřte oprávnění pro roli "Registered"
 
 ### Problém: "Unauthorized" při ukládání
+
 - Zkontrolujte, že uživatel má oprávnění k aktualizaci kolekce `apps`
 - Ověřte, že `DIRECTUS_ADMIN_TOKEN` je správně nastaven
 
 ### Problém: Komponenty se neukládají
+
 - Zkontrolujte strukturu `pages` pole
-- Ověřte, že JSON pole je správně formátováno 
+- Ověřte, že JSON pole je správně formátováno

@@ -1,7 +1,7 @@
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { useState, useEffect } from 'react'
+import { useParams } from 'next/navigation'
 import {
   DndContext,
   DragEndEvent,
@@ -11,29 +11,33 @@ import {
   useSensor,
   useSensors,
   closestCenter,
-} from '@dnd-kit/core';
+} from '@dnd-kit/core'
 import {
   SortableContext,
   verticalListSortingStrategy,
   arrayMove,
-} from '@dnd-kit/sortable';
-import { ComponentLibrary } from '@/components/builder/ComponentLibrary';
-import { Canvas } from '@/components/builder/Canvas';
-import { PropertyPanel } from '@/components/builder/PropertyPanel';
-import { Toolbar } from '@/components/builder/Toolbar';
-import { Component, Page, AppData } from '@/types/builder';
-import { componentCategories } from '@/components/builder/ComponentLibrary';
+} from '@dnd-kit/sortable'
+import { ComponentLibrary } from '@/components/builder/ComponentLibrary'
+import { Canvas } from '@/components/builder/Canvas'
+import { PropertyPanel } from '@/components/builder/PropertyPanel'
+import { Toolbar } from '@/components/builder/Toolbar'
+import { Component, Page, AppData } from '@/types/builder'
+import { componentCategories } from '@/components/builder/ComponentLibrary'
 
 export default function BuilderPage() {
-  const params = useParams();
-  const appId = params.id as string;
-  
-  const [appData, setAppData] = useState<AppData | null>(null);
-  const [currentPage, setCurrentPage] = useState<Page | null>(null);
-  const [selectedComponent, setSelectedComponent] = useState<Component | null>(null);
-  const [isPreviewMode, setIsPreviewMode] = useState(false);
-  const [viewMode, setViewMode] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
-  const [activeId, setActiveId] = useState<string | null>(null);
+  const params = useParams()
+  const appId = params.id as string
+
+  const [appData, setAppData] = useState<AppData | null>(null)
+  const [currentPage, setCurrentPage] = useState<Page | null>(null)
+  const [selectedComponent, setSelectedComponent] = useState<Component | null>(
+    null
+  )
+  const [isPreviewMode, setIsPreviewMode] = useState(false)
+  const [viewMode, setViewMode] = useState<'desktop' | 'tablet' | 'mobile'>(
+    'desktop'
+  )
+  const [activeId, setActiveId] = useState<string | null>(null)
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -41,155 +45,166 @@ export default function BuilderPage() {
         distance: 8,
       },
     })
-  );
+  )
 
   // Načtení dat aplikace
   useEffect(() => {
     if (appId) {
-      loadAppData(appId);
+      loadAppData(appId)
     }
-  }, [appId]);
+  }, [appId])
 
   const loadAppData = async (id: string) => {
     try {
-      const response = await fetch(`/api/apps/${id}`);
-      const data = await response.json();
-      setAppData(data);
-      setCurrentPage(data.pages[0] || null);
+      const response = await fetch(`/api/apps/${id}`)
+      const data = await response.json()
+      setAppData(data)
+      setCurrentPage(data.pages[0] || null)
     } catch (error) {
-      console.error('Chyba při načítání aplikace:', error);
+      console.error('Chyba při načítání aplikace:', error)
     }
-  };
+  }
 
   const handleDragStart = (event: DragStartEvent) => {
-    setActiveId(event.active.id as string);
-  };
+    setActiveId(event.active.id as string)
+  }
 
   const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-    setActiveId(null);
+    const { active, over } = event
+    setActiveId(null)
 
-    if (!over || !currentPage) return;
+    if (!over || !currentPage) return
 
     // Přesun komponenty na stránce
     if (active.id !== over.id) {
-      const oldIndex = currentPage.components.findIndex(comp => comp.id === active.id);
-      const newIndex = currentPage.components.findIndex(comp => comp.id === over.id);
-      
-      const newComponents = arrayMove(currentPage.components, oldIndex, newIndex);
-      
+      const oldIndex = currentPage.components.findIndex(
+        comp => comp.id === active.id
+      )
+      const newIndex = currentPage.components.findIndex(
+        comp => comp.id === over.id
+      )
+
+      const newComponents = arrayMove(
+        currentPage.components,
+        oldIndex,
+        newIndex
+      )
+
       setCurrentPage({
         ...currentPage,
-        components: newComponents
-      });
+        components: newComponents,
+      })
     }
-  };
+  }
 
   const handleComponentDrop = (componentType: string, position: number) => {
-    if (!currentPage) return;
+    if (!currentPage) return
 
-    const newComponent = createComponentFromType(componentType, position);
-    const newComponents = [...currentPage.components];
-    newComponents.splice(position, 0, newComponent);
-    
+    const newComponent = createComponentFromType(componentType, position)
+    const newComponents = [...currentPage.components]
+    newComponents.splice(position, 0, newComponent)
+
     setCurrentPage({
       ...currentPage,
-      components: newComponents
-    });
-  };
+      components: newComponents,
+    })
+  }
 
-  const createComponentFromType = (type: string, position: number): Component => {
+  const createComponentFromType = (
+    type: string,
+    position: number
+  ): Component => {
     const componentTypes: Record<string, any> = {
-      hero: { 
-        name: 'Hero sekce', 
-        defaultProps: { 
-          title: 'Vítejte', 
+      hero: {
+        name: 'Hero sekce',
+        defaultProps: {
+          title: 'Vítejte',
           subtitle: 'Vaše úžasná aplikace',
           buttonText: 'Začít',
           buttonLink: '#',
-          buttonVariant: 'primary'
-        } 
+          buttonVariant: 'primary',
+        },
       },
-      text: { 
-        name: 'Text blok', 
-        defaultProps: { 
+      text: {
+        name: 'Text blok',
+        defaultProps: {
           content: 'Zde napište svůj text...',
           heading: '',
-          alignment: 'left'
-        } 
+          alignment: 'left',
+        },
       },
-      image: { 
-        name: 'Obrázek', 
-        defaultProps: { 
-          src: '/placeholder.jpg', 
+      image: {
+        name: 'Obrázek',
+        defaultProps: {
+          src: '/placeholder.jpg',
           alt: 'Obrázek',
-          caption: ''
-        } 
+          caption: '',
+        },
       },
-      button: { 
-        name: 'Tlačítko', 
-        defaultProps: { 
-          text: 'Klikněte zde', 
+      button: {
+        name: 'Tlačítko',
+        defaultProps: {
+          text: 'Klikněte zde',
           variant: 'primary',
           size: 'medium',
-          link: '#'
-        } 
+          link: '#',
+        },
       },
-      form: { 
-        name: 'Kontaktní formulář', 
-        defaultProps: { 
+      form: {
+        name: 'Kontaktní formulář',
+        defaultProps: {
           title: 'Kontaktujte nás',
           fields: ['name', 'email', 'message'],
-          submitText: 'Odeslat'
-        } 
+          submitText: 'Odeslat',
+        },
       },
-      gallery: { 
-        name: 'Galerie', 
-        defaultProps: { 
+      gallery: {
+        name: 'Galerie',
+        defaultProps: {
           images: [],
-          columns: 3
-        } 
+          columns: 3,
+        },
       },
-      testimonial: { 
-        name: 'Reference', 
-        defaultProps: { 
-          text: 'Skvělá služba!', 
+      testimonial: {
+        name: 'Reference',
+        defaultProps: {
+          text: 'Skvělá služba!',
           author: 'Zákazník',
           company: 'Společnost s.r.o.',
-          rating: 5
-        } 
+          rating: 5,
+        },
       },
-      pricing: { 
-        name: 'Ceník', 
-        defaultProps: { 
+      pricing: {
+        name: 'Ceník',
+        defaultProps: {
           plans: [
             {
               name: 'Základní',
               price: '299 Kč',
               features: ['Funkce 1', 'Funkce 2'],
-              popular: false
-            }
-          ]
-        } 
+              popular: false,
+            },
+          ],
+        },
       },
-    };
+    }
 
     // Pokud typ není v componentTypes, použij defaultProps z knihovny (prázdné)
-    let componentType = componentTypes[type];
-    let style = {};
+    let componentType = componentTypes[type]
+    let style = {}
     if (!componentType) {
       // Zkus najít v ComponentLibrary
-      let found;
+      let found
       for (const cat of componentCategories) {
-        found = cat.components.find((c: any) => c.id === type);
-        if (found) break;
+        found = cat.components.find((c: any) => c.id === type)
+        if (found) break
       }
       if (found) {
-        componentType = { name: found.name, defaultProps: found.defaultProps };
-        style = found.defaultStyle || {};
+        componentType = { name: found.name, defaultProps: found.defaultProps }
+        style = found.defaultStyle || {}
       } else {
-        componentType = { name: type, defaultProps: {} };
-        style = {};
+        componentType = { name: type, defaultProps: {} }
+        style = {}
       }
     }
     return {
@@ -199,36 +214,41 @@ export default function BuilderPage() {
       props: componentType.defaultProps,
       position,
       style,
-      children: []
-    };
-  };
+      children: [],
+    }
+  }
 
-  const updateComponent = (componentId: string, updates: Partial<Component>) => {
-    if (!currentPage) return;
+  const updateComponent = (
+    componentId: string,
+    updates: Partial<Component>
+  ) => {
+    if (!currentPage) return
 
-    const newComponents = currentPage.components.map(comp => 
+    const newComponents = currentPage.components.map(comp =>
       comp.id === componentId ? { ...comp, ...updates } : comp
-    );
+    )
 
     setCurrentPage({
       ...currentPage,
-      components: newComponents
-    });
-  };
+      components: newComponents,
+    })
+  }
 
   const deleteComponent = (componentId: string) => {
-    if (!currentPage) return;
+    if (!currentPage) return
 
-    const newComponents = currentPage.components.filter(comp => comp.id !== componentId);
+    const newComponents = currentPage.components.filter(
+      comp => comp.id !== componentId
+    )
     setCurrentPage({
       ...currentPage,
-      components: newComponents
-    });
-    setSelectedComponent(null);
-  };
+      components: newComponents,
+    })
+    setSelectedComponent(null)
+  }
 
   const saveApp = async () => {
-    if (!appData || !currentPage) return;
+    if (!appData || !currentPage) return
 
     try {
       await fetch(`/api/apps/${appId}`, {
@@ -236,31 +256,31 @@ export default function BuilderPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...appData,
-          pages: appData.pages.map(page => 
+          pages: appData.pages.map(page =>
             page.id === currentPage.id ? currentPage : page
-          )
-        })
-      });
-      
+          ),
+        }),
+      })
+
       // Zobrazit notifikaci o uložení
-      console.log('Aplikace uložena');
+      console.log('Aplikace uložena')
     } catch (error) {
-      console.error('Chyba při ukládání:', error);
+      console.error('Chyba při ukládání:', error)
     }
-  };
+  }
 
   if (!appData || !currentPage) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex min-h-screen items-center justify-center">
         <div className="text-lg">Načítání...</div>
       </div>
-    );
+    )
   }
 
   return (
-    <div className="h-screen flex flex-col bg-gray-50">
+    <div className="flex h-screen flex-col bg-gray-50">
       {/* Toolbar */}
-      <Toolbar 
+      <Toolbar
         appName={appData.name}
         onSave={saveApp}
         onPreview={() => setIsPreviewMode(!isPreviewMode)}
@@ -269,16 +289,16 @@ export default function BuilderPage() {
         isPreviewMode={isPreviewMode}
       />
 
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex flex-1 overflow-hidden">
         {/* Component Library */}
         {!isPreviewMode && (
-          <div className="w-80 bg-white border-r border-gray-200 overflow-y-auto">
+          <div className="w-80 overflow-y-auto border-r border-gray-200 bg-white">
             <ComponentLibrary onComponentDrop={handleComponentDrop} />
           </div>
         )}
 
         {/* Main Canvas */}
-        <div className="flex-1 flex flex-col">
+        <div className="flex flex-1 flex-col">
           <DndContext
             sensors={sensors}
             collisionDetection={closestCenter}
@@ -300,10 +320,10 @@ export default function BuilderPage() {
                 onViewModeChange={setViewMode}
               />
             </SortableContext>
-            
+
             <DragOverlay>
               {activeId ? (
-                <div className="bg-white border-2 border-blue-500 rounded-lg p-4 shadow-lg">
+                <div className="rounded-lg border-2 border-blue-500 bg-white p-4 shadow-lg">
                   Přesouvání komponenty...
                 </div>
               ) : null}
@@ -313,17 +333,19 @@ export default function BuilderPage() {
 
         {/* Property Panel */}
         {!isPreviewMode && selectedComponent && (
-          <div className="w-80 bg-white border-l border-gray-200 overflow-y-auto">
+          <div className="w-80 overflow-y-auto border-l border-gray-200 bg-white">
             <PropertyPanel
               component={selectedComponent}
-              onUpdate={(updates) => {
-                updateComponent(selectedComponent.id, updates);
-                setSelectedComponent((prev) => prev ? { ...prev, ...updates } : prev);
+              onUpdate={updates => {
+                updateComponent(selectedComponent.id, updates)
+                setSelectedComponent(prev =>
+                  prev ? { ...prev, ...updates } : prev
+                )
               }}
             />
           </div>
         )}
       </div>
     </div>
-  );
-} 
+  )
+}

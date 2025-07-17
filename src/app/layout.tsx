@@ -4,7 +4,10 @@ import './globals.css'
 import { Providers } from './providers'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
-const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' })
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  variable: '--font-playfair',
+})
 
 export const metadata: Metadata = {
   title: 'AppDílna - Vytvořte si vlastní aplikaci',
@@ -20,11 +23,9 @@ export default function RootLayout({
     <html lang="cs">
       <body className={`${inter.variable} ${playfair.variable} font-sans`}>
         <Providers>
-          <main className="min-h-screen bg-[#f5f1e6]">
-            {children}
-          </main>
+          <main className="min-h-screen bg-[#f5f1e6]">{children}</main>
         </Providers>
       </body>
     </html>
   )
-} 
+}
